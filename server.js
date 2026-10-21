@@ -833,10 +833,16 @@ app.get('/api/stats', (req, res) => {
   });
 });
 
+// Health Check for Deployment (Render, Railway, Heroku, Fly.io)
+app.get('/health', (req, res) => {
+  res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+});
+
 // Start Express Server
-app.listen(PORT, () => {
+const HOST = '0.0.0.0';
+app.listen(PORT, HOST, () => {
   console.log(`=======================================================`);
   console.log(`  TenderLens AI - Enterprise Procurement Intelligence  `);
-  console.log(`  Server running live at: http://localhost:${PORT}      `);
+  console.log(`  Server running live at: http://${HOST}:${PORT}      `);
   console.log(`=======================================================`);
 });

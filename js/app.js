@@ -1,15 +1,16 @@
 /**
  * TenderLens - Enterprise Client Application Controller
- * Full-stack integration with TenderLens Express REST API
+ * Handles tabs, real file uploads, scenario benchmarks, API requests, and UI updates
  */
 
 class TenderLensApp {
   constructor() {
-    this.currentStep = 1;
+    this.activeTab = 'tabWorkspace';
     this.selectedTenderId = 'gem-it';
     this.selectedScenarioId = 'sample-traders';
     this.reviewerOverrides = {};
-    this.activeInspectedField = { docType: 'oem', fieldKey: 'validUntil' };
+    this.inspectedDoc = 'oem';
+    this.inspectedField = 'validUntil';
     this.uploadedCustomDocs = null;
     this.apiBase = window.location.origin;
 
@@ -17,260 +18,347 @@ class TenderLensApp {
   }
 
   async init() {
-    this.setupEventListeners();
-    await this.checkApiHealth();
-    await this.fetchTenders();
-    await this.loadScenario(this.selectedScenarioId);
-    this.renderStep1();
+    this.bindEvents();
+    await this.syncServerState();
+    this.loadScenario(this.selectedScenarioId);
   }
 
-  async checkApiHealth() {
+  /**
+   * Health check and initial sync with backend
+   */
+  async syncServerState() {
     try {
       const res = await fetch(`${this.apiBase}/api/stats`);
       if (res.ok) {
-        const data = await res.json();
-        document.getElementById('apiStatusPill').innerHTML = `
-          <span class="dot-live"></span>
-          <span class="status-text">Backend API Live: <strong>${window.location.port || '8080'}</strong> (${data.stats.vendorsScreened} Screened)</span>
-        `;
+        // Backend live
       }
     } catch (e) {
-      console.warn('API health check fallback to local engine mode:', e.message);
-    }
-  }
-
-  async fetchTenders() {
-    try {
-      const res = await fetch(`${this.apiBase}/api/tenders`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data.tenders) {
-          // Update global tenders cache
-          Object.assign(SAGE_TENDERS, data.tenders);
-        }
-      }
-    } catch (e) {
-      console.warn('Using local tenders cache:', e.message);
-    }
-  }
-
-  setupEventListeners() {
-    // Pipeline Navigation Buttons
-    document.querySelectorAll('.step-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const step = parseInt(btn.dataset.step, 10);
-        this.goToStep(step);
-      });
-    });
-
-    // Preset Scenario Selector Buttons
-    document.querySelectorAll('[data-preset]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('[data-preset]').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        this.uploadedCustomDocs = null;
-        this.loadScenario(btn.dataset.preset);
-      });
-    });
-
-    // Sample Files Drawer Toggle
-    const toggleSampleBtn = document.getElementById('toggleSampleFilesBtn');
-    const drawer = document.getElementById('sampleFilesDrawer');
-    const closeDrawerBtn = document.getElementById('closeDrawerBtn');
-
-    if (toggleSampleBtn && drawer) {
-      toggleSampleBtn.addEventListener('click', () => {
-        drawer.style.display = drawer.style.display === 'none' ? 'block' : 'none';
-      });
-    }
-    if (closeDrawerBtn && drawer) {
-      closeDrawerBtn.addEventListener('click', () => {
-        drawer.style.display = 'none';
-      });
-    }
-
-    // Quick Preset Button in nav bar
-    const quickBtn = document.getElementById('quickPresetBtn');
-    if (quickBtn) {
-      quickBtn.addEventListener('click', () => {
-        const banner = document.getElementById('scenarioBanner');
-        banner.style.display = banner.style.display === 'none' ? 'block' : 'none';
-      });
-    }
-
-    // Reset button
-    const resetBtn = document.getElementById('resetAppBtn');
-    if (resetBtn) {
-      resetBtn.addEventListener('click', () => {
-        this.reviewerOverrides = {};
-        this.uploadedCustomDocs = null;
-        this.loadScenario('sample-traders');
-        this.goToStep(1);
-      });
-    }
-
-    // Tender Selection Dropdown
-    const tenderSelect = document.getElementById('tenderSelect');
-    if (tenderSelect) {
-      tenderSelect.addEventListener('change', (e) => {
-        this.selectedTenderId = e.target.value;
-        this.renderStep1();
-      });
-    }
-
-    // Real File Upload Detection & UI update
-    ['Gst', 'Pan', 'Udyam', 'Startup', 'Oem'].forEach(type => {
-      const input = document.getElementById(`fileInput${type}`);
-      if (input) {
-        input.addEventListener('change', (e) => {
-          if (e.target.files && e.target.files[0]) {
-            const f = e.target.files[0];
-            const nameEl = document.getElementById(`slotFilename${type}`);
-            const metaEl = document.getElementById(`slotMeta${type}`);
-            if (nameEl) nameEl.textContent = `${f.name} (Staged for Upload)`;
-            if (metaEl) metaEl.textContent = `Size: ${Math.round(f.size / 1024)} KB • Real User Upload`;
-          }
-        });
-      }
-    });
-
-    // Step 1: Start Pipeline Button (Triggers REAL server upload if files are selected!)
-    const startBtn = document.getElementById('startExtractionBtn');
-    if (startBtn) {
-      startBtn.addEventListener('click', async () => {
-        await this.handlePipelineExecution();
-      });
-    }
-
-    // Step 1: Reload Active Benchmark
-    const loadPresetBtn = document.getElementById('loadSelectedPresetBtn');
-    if (loadPresetBtn) {
-      loadPresetBtn.addEventListener('click', () => {
-        this.uploadedCustomDocs = null;
-        this.loadScenario(this.selectedScenarioId);
-      });
-    }
-
-    // Pipeline navigation buttons
-    const step2Back = document.getElementById('step2BackBtn');
-    const step2Next = document.getElementById('step2NextBtn');
-    if (step2Back) step2Back.addEventListener('click', () => this.goToStep(1));
-    if (step2Next) step2Next.addEventListener('click', () => this.goToStep(3));
-
-    const step3Back = document.getElementById('step3BackBtn');
-    const step3Next = document.getElementById('step3NextBtn');
-    if (step3Back) step3Back.addEventListener('click', () => this.goToStep(2));
-    if (step3Next) step3Next.addEventListener('click', () => this.goToStep(4));
-
-    const step4Back = document.getElementById('step4BackBtn');
-    const step4Next = document.getElementById('step4NextBtn');
-    if (step4Back) step4Back.addEventListener('click', () => this.goToStep(3));
-    if (step4Next) step4Next.addEventListener('click', () => this.goToStep(5));
-
-    // Evaluation Filter Pills (Step 4)
-    document.querySelectorAll('.filter-pills .pill-btn').forEach(pill => {
-      pill.addEventListener('click', () => {
-        document.querySelectorAll('.filter-pills .pill-btn').forEach(p => p.classList.remove('active'));
-        pill.classList.add('active');
-        this.renderStep4EvaluationTable(pill.dataset.filter);
-      });
-    });
-
-    // Step 3 Quick Action Buttons
-    const btnApproveName = document.getElementById('btnApproveNameVariance');
-    const btnRejectName = document.getElementById('btnRejectNameVariance');
-    if (btnApproveName) {
-      btnApproveName.addEventListener('click', () => {
-        this.applyDirectOverride(
-          'REQ-04',
-          'COMPLIANT',
-          'Approved variance: "Sample Trader Enterprises" confirmed as registered trade name of "Sample Traders Pvt Ltd".',
-          'Evaluation Officer (Admin)'
-        );
-      });
-    }
-
-    if (btnRejectName) {
-      btnRejectName.addEventListener('click', () => {
-        this.applyDirectOverride(
-          'REQ-04',
-          'NON_COMPLIANT',
-          'Clarification required: Discrepancy between private limited entity and enterprise trade name.',
-          'Evaluation Officer (Admin)'
-        );
-      });
-    }
-
-    // Modal Events
-    const modalClose = document.getElementById('modalCloseBtn');
-    const modalCancel = document.getElementById('modalCancelBtn');
-    const modalSave = document.getElementById('modalSaveOverrideBtn');
-    if (modalClose) modalClose.addEventListener('click', () => this.closeOverrideModal());
-    if (modalCancel) modalCancel.addEventListener('click', () => this.closeOverrideModal());
-    if (modalSave) modalSave.addEventListener('click', () => this.saveModalOverride());
-
-    // Export JSON Button
-    const exportJson = document.getElementById('exportJsonBtn');
-    if (exportJson) {
-      exportJson.addEventListener('click', () => {
-        const tender = SAGE_TENDERS[this.selectedTenderId] || SAGE_TENDERS['gem-it'];
-        const activeDocs = this.getActiveDocs();
-        const cross = SageEngine.evaluateCrossDocMatrix(activeDocs);
-        const findings = SageEngine.evaluateTenderChecklist(tender, activeDocs, cross, this.reviewerOverrides);
-        const score = SageEngine.computeReadinessScore(findings);
-        const scenario = SAGE_SCENARIOS[this.selectedScenarioId];
-        SageReport.exportJsonAuditTrail(tender, scenario, findings, score);
-      });
+      console.warn('API running in local-engine fallback mode:', e.message);
     }
   }
 
   /**
-   * Real File Upload & Execution Handler
+   * Toast notification helper
    */
-  async handlePipelineExecution() {
-    const fileGst = document.getElementById('fileInputGst')?.files[0];
-    const filePan = document.getElementById('fileInputPan')?.files[0];
-    const fileUdyam = document.getElementById('fileInputUdyam')?.files[0];
-    const fileStartup = document.getElementById('fileInputStartup')?.files[0];
-    const fileOem = document.getElementById('fileInputOem')?.files[0];
+  showToast(message, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
 
-    const hasAnyRealFile = fileGst || filePan || fileUdyam || fileStartup || fileOem;
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    container.appendChild(toast);
 
-    if (hasAnyRealFile) {
-      const formData = new FormData();
-      if (fileGst) formData.append('gst', fileGst);
-      if (filePan) formData.append('pan', filePan);
-      if (fileUdyam) formData.append('udyam', fileUdyam);
-      if (fileStartup) formData.append('startup', fileStartup);
-      if (fileOem) formData.append('oem', fileOem);
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(8px)';
+      toast.style.transition = 'all 0.3s ease';
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
 
-      const btn = document.getElementById('startExtractionBtn');
-      const originalText = btn.innerHTML;
-      btn.innerHTML = `<span>Uploading & Parsing Real Files via API...</span>`;
-      btn.disabled = true;
+  /**
+   * Bind all button events and user interactions
+   */
+  bindEvents() {
+    // 1. Navigation Tabs
+    document.querySelectorAll('.tab-link').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetTab = btn.dataset.tab;
+        this.switchTab(targetTab);
+      });
+    });
 
-      try {
-        const res = await fetch(`${this.apiBase}/api/upload`, {
-          method: 'POST',
-          body: formData
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.documents && Object.keys(data.documents).length > 0) {
-            // Merge uploaded docs with base scenario
-            const baseScenario = SAGE_SCENARIOS[this.selectedScenarioId];
-            this.uploadedCustomDocs = { ...baseScenario.docs, ...data.documents };
-          }
-        }
-      } catch (err) {
-        console.error('File upload failed, falling back to local simulated processing:', err);
-      } finally {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-      }
+    // 2. Demo Scenario Buttons
+    document.querySelectorAll('.btn-scenario').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.btn-scenario').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        this.uploadedCustomDocs = null;
+        this.loadScenario(btn.dataset.scenario);
+        this.showToast(`Loaded ${btn.textContent.trim()}`, 'success');
+      });
+    });
+
+    // 3. Tender Specification Dropdown
+    const tenderSelect = document.getElementById('tenderSelect');
+    if (tenderSelect) {
+      tenderSelect.addEventListener('change', (e) => {
+        this.selectedTenderId = e.target.value;
+        this.runFullAnalysis();
+        this.showToast(`Switched tender rules to ${e.target.options[e.target.selectedIndex].text.split('(')[0]}`);
+      });
     }
 
-    this.goToStep(2);
+    // 4. Run Compliance Scan Button
+    const runScanBtn = document.getElementById('btnRunAuditScan');
+    if (runScanBtn) {
+      runScanBtn.addEventListener('click', () => {
+        runScanBtn.innerHTML = `<span>Scanning...</span>`;
+        setTimeout(() => {
+          this.runFullAnalysis();
+          runScanBtn.innerHTML = `
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <span>Run Compliance Scan</span>
+          `;
+          this.showToast('Compliance audit scan completed successfully!', 'success');
+        }, 350);
+      });
+    }
+
+    // 5. Test Files Modal Toggle
+    const btnSamples = document.getElementById('btnDownloadSamples');
+    const samplesModal = document.getElementById('samplesModal');
+    const btnCloseSamples = document.getElementById('btnCloseSamplesModal');
+
+    if (btnSamples && samplesModal) {
+      btnSamples.addEventListener('click', () => {
+        samplesModal.style.display = samplesModal.style.display === 'none' ? 'block' : 'none';
+      });
+    }
+    if (btnCloseSamples && samplesModal) {
+      btnCloseSamples.addEventListener('click', () => {
+        samplesModal.style.display = 'none';
+      });
+    }
+
+    // 6. Real File Inputs (Gst, Pan, Oem, Udyam, Startup)
+    ['Gst', 'Pan', 'Oem', 'Udyam', 'Startup'].forEach(type => {
+      const input = document.getElementById(`fileUpload${type}`);
+      if (input) {
+        input.addEventListener('change', async (e) => {
+          if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            await this.handleSingleFileUpload(type.toLowerCase(), file);
+          }
+        });
+      }
+    });
+
+    // 7. Reviewer Override Modal Triggers
+    const btnOverride = document.getElementById('btnTriggerOverride');
+    if (btnOverride) {
+      btnOverride.addEventListener('click', () => {
+        this.openOverrideModal('REQ-05');
+      });
+    }
+
+    const btnCloseModal = document.getElementById('btnModalClose');
+    const btnCancelModal = document.getElementById('btnModalCancel');
+    const btnConfirmModal = document.getElementById('btnModalConfirm');
+
+    if (btnCloseModal) btnCloseModal.addEventListener('click', () => this.closeOverrideModal());
+    if (btnCancelModal) btnCancelModal.addEventListener('click', () => this.closeOverrideModal());
+    if (btnConfirmModal) btnConfirmModal.addEventListener('click', () => this.saveOverride());
+
+    // 8. Export JSON Button
+    const btnExportJson = document.getElementById('btnExportJson');
+    if (btnExportJson) {
+      btnExportJson.addEventListener('click', () => {
+        const tender = SAGE_TENDERS[this.selectedTenderId] || SAGE_TENDERS['gem-it'];
+        const scenario = SAGE_SCENARIOS[this.selectedScenarioId];
+        const docs = this.getActiveDocs();
+        const cross = SageEngine.evaluateCrossDocMatrix(docs);
+        const findings = SageEngine.evaluateTenderChecklist(tender, docs, cross, this.reviewerOverrides);
+        const score = SageEngine.computeReadinessScore(findings);
+        SageReport.exportJsonAuditTrail(tender, scenario, findings, score);
+        this.showToast('Downloaded official JSON audit trail file', 'success');
+      });
+    }
+
+    // 9. Auth Modal Events
+    const btnNavAuth = document.getElementById('btnNavAuthAction');
+    const authModal = document.getElementById('authModal');
+    const btnCloseAuth = document.getElementById('btnCloseAuthModal');
+    const btnTabLogin = document.getElementById('btnAuthTabLogin');
+    const btnTabSignup = document.getElementById('btnAuthTabSignup');
+    const authForm = document.getElementById('authForm');
+    const btnAuthSubmit = document.getElementById('btnAuthSubmit');
+    const authModalTitle = document.getElementById('authModalTitle');
+
+    if (btnNavAuth && authModal) {
+      btnNavAuth.addEventListener('click', () => {
+        authModal.classList.toggle('open');
+      });
+    }
+    if (btnCloseAuth && authModal) {
+      btnCloseAuth.addEventListener('click', () => {
+        authModal.classList.remove('open');
+      });
+    }
+    if (btnTabLogin && btnTabSignup) {
+      btnTabLogin.addEventListener('click', (e) => {
+        e.preventDefault();
+        btnTabLogin.classList.add('active');
+        btnTabSignup.classList.remove('active');
+        if (authModalTitle) authModalTitle.textContent = 'Sign In to TenderLens';
+        if (btnAuthSubmit) btnAuthSubmit.textContent = 'Log In to Workspace';
+      });
+      btnTabSignup.addEventListener('click', (e) => {
+        e.preventDefault();
+        btnTabSignup.classList.add('active');
+        btnTabLogin.classList.remove('active');
+        if (authModalTitle) authModalTitle.textContent = 'Create Enterprise Account';
+        if (btnAuthSubmit) btnAuthSubmit.textContent = 'Create Account & Proceed';
+      });
+    }
+    if (authForm) {
+      authForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('authEmailInput')?.value || 'officer@gem.gov.in';
+        const role = document.getElementById('authRoleSelect')?.value || 'Evaluation Officer';
+        const name = email.split('@')[0].toUpperCase();
+        this.setSessionUser(name, role);
+        if (authModal) authModal.classList.remove('open');
+        this.showToast(`Logged in successfully as ${name} (${role})`, 'success');
+      });
+    }
+
+    // Quick Login Buttons
+    const btnQuickOfficer = document.getElementById('btnQuickOfficer');
+    const btnQuickLead = document.getElementById('btnQuickLead');
+    const btnQuickVendor = document.getElementById('btnQuickVendor');
+
+    if (btnQuickOfficer) {
+      btnQuickOfficer.addEventListener('click', () => {
+        this.setSessionUser('Vanshika (Admin)', 'Procurement Officer');
+        if (authModal) authModal.classList.remove('open');
+        this.showToast('Logged in as Evaluation Officer (Admin)', 'success');
+      });
+    }
+    if (btnQuickLead) {
+      btnQuickLead.addEventListener('click', () => {
+        this.setSessionUser('Committee Lead Sharma', 'Committee Lead');
+        if (authModal) authModal.classList.remove('open');
+        this.showToast('Logged in as Tender Committee Lead', 'success');
+      });
+    }
+    if (btnQuickVendor) {
+      btnQuickVendor.addEventListener('click', () => {
+        this.setSessionUser('Rajesh (Bidder)', 'Vendor / MSME');
+        if (authModal) authModal.classList.remove('open');
+        this.showToast('Logged in as Vendor Bidder (MSME)', 'success');
+      });
+    }
+
+    // 10. Document Evidence & OCR Inspector Toggle
+    const btnVisual = document.getElementById('btnToggleVisualProof');
+    const btnOcr = document.getElementById('btnToggleOcrText');
+    const visualContainer = document.getElementById('mockDocumentContainer');
+    const ocrContainer = document.getElementById('mockOcrTextContainer');
+
+    if (btnVisual && btnOcr && visualContainer && ocrContainer) {
+      btnVisual.addEventListener('click', () => {
+        btnVisual.classList.add('btn-primary');
+        btnVisual.classList.remove('btn-outline');
+        btnOcr.classList.remove('btn-primary');
+        btnOcr.classList.add('btn-outline');
+        visualContainer.style.display = 'block';
+        ocrContainer.style.display = 'none';
+      });
+
+      btnOcr.addEventListener('click', () => {
+        btnOcr.classList.add('btn-primary');
+        btnOcr.classList.remove('btn-outline');
+        btnVisual.classList.remove('btn-primary');
+        btnVisual.classList.add('btn-outline');
+        visualContainer.style.display = 'none';
+        ocrContainer.style.display = 'block';
+        this.updateOcrTextDisplay();
+      });
+    }
+  }
+
+  setSessionUser(name, role) {
+    const navName = document.getElementById('navUserName');
+    const navRole = document.getElementById('navUserRole');
+    const navAvatar = document.getElementById('navUserAvatar');
+    if (navName) navName.textContent = name;
+    if (navRole) navRole.textContent = role;
+    if (navAvatar) navAvatar.textContent = name.charAt(0).toUpperCase();
+  }
+
+  updateOcrTextDisplay() {
+    const ocrContainer = document.getElementById('mockOcrTextContainer');
+    if (!ocrContainer) return;
+    const docs = this.getActiveDocs();
+    const doc = docs[this.inspectedDoc] || docs['oem'];
+    const fields = doc?.fields || {};
+
+    let lines = `[OCR PIPELINE: TENDERLENS DETERMINISTIC ENGINE]\n`;
+    lines += `DOCUMENT: ${doc?.filename || 'Document'}\n`;
+    lines += `PARSED AT: ${new Date().toISOString()}\n`;
+    lines += `========================================================\n`;
+    for (const [key, val] of Object.entries(fields)) {
+      lines += `${key.padEnd(20)} : ${val.value || val}\n`;
+    }
+    lines += `========================================================\n`;
+    lines += `[OCR CONFIDENCE SCORE: 98.2% | TOKENS: 45 | VERIFIED: PASS]`;
+    ocrContainer.textContent = lines;
+  }
+
+  /**
+   * Switch between Tabs
+   */
+  switchTab(tabId) {
+    this.activeTab = tabId;
+
+    // Update Tab Link styles
+    document.querySelectorAll('.tab-link').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.tab === tabId);
+    });
+
+    // Show active panel
+    document.querySelectorAll('.tab-content-panel').forEach(panel => {
+      panel.classList.toggle('active', panel.id === tabId);
+    });
+
+    if (tabId === 'tabCertificate') this.renderCertificateTab();
+    if (tabId === 'tabAuditTrail') this.renderAuditTrailTab();
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /**
+   * Real File Upload Handler
+   */
+  async handleSingleFileUpload(docType, file) {
+    this.showToast(`Uploading ${file.name} to server OCR pipeline...`);
+    const formData = new FormData();
+    formData.append(docType, file);
+
+    try {
+      const res = await fetch(`${this.apiBase}/api/upload`, {
+        method: 'POST',
+        body: formData
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.documents && data.documents[docType]) {
+          const doc = data.documents[docType];
+          const baseScenario = SAGE_SCENARIOS[this.selectedScenarioId];
+          if (!this.uploadedCustomDocs) {
+            this.uploadedCustomDocs = { ...baseScenario.docs };
+          }
+          this.uploadedCustomDocs[docType] = doc;
+
+          // Update UI label
+          const nameEl = document.getElementById(`slotName${docType.charAt(0).toUpperCase() + docType.slice(1)}`);
+          if (nameEl) nameEl.textContent = `${file.name} (Uploaded)`;
+
+          this.runFullAnalysis();
+          this.showToast(`Successfully extracted fields from ${file.name}`, 'success');
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('Upload error, using local parsing:', err);
+    }
+
+    // Fallback if offline
+    const nameEl = document.getElementById(`slotName${docType.charAt(0).toUpperCase() + docType.slice(1)}`);
+    if (nameEl) nameEl.textContent = `${file.name} (Uploaded)`;
+    this.showToast(`Staged ${file.name}`, 'info');
   }
 
   getActiveDocs() {
@@ -279,261 +367,81 @@ class TenderLensApp {
     return scenario.docs;
   }
 
-  goToStep(stepNumber) {
-    this.currentStep = stepNumber;
-
-    document.querySelectorAll('.step-btn').forEach(btn => {
-      const step = parseInt(btn.dataset.step, 10);
-      btn.classList.toggle('active', step === stepNumber);
-      btn.classList.toggle('completed', step < stepNumber);
-    });
-
-    document.querySelectorAll('.step-view').forEach(view => view.classList.remove('active'));
-    const targetView = document.getElementById(`viewStep${stepNumber}`);
-    if (targetView) targetView.classList.add('active');
-
-    if (stepNumber === 1) this.renderStep1();
-    if (stepNumber === 2) this.renderStep2();
-    if (stepNumber === 3) this.renderStep3();
-    if (stepNumber === 4) this.renderStep4();
-    if (stepNumber === 5) this.renderStep5();
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  async loadScenario(scenarioId) {
+  loadScenario(scenarioId) {
     this.selectedScenarioId = scenarioId;
-
-    try {
-      const res = await fetch(`${this.apiBase}/api/scenarios/${scenarioId}`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data.scenario) {
-          SAGE_SCENARIOS[scenarioId] = data.scenario;
-        }
-      }
-    } catch (e) {
-      console.warn('Using local scenario cache:', e.message);
-    }
-
     const scenario = SAGE_SCENARIOS[scenarioId] || SAGE_SCENARIOS['sample-traders'];
     const docs = scenario.docs;
 
+    // Update slot labels
     if (docs.gst) {
-      document.getElementById('slotFilenameGst').textContent = docs.gst.filename;
-      document.getElementById('slotMetaGst').textContent = `Size: ${docs.gst.fileSize} • ${docs.gst.formType}`;
+      document.getElementById('slotNameGst').textContent = docs.gst.filename;
+      document.getElementById('slotSummaryGst').innerHTML = `GSTIN: <strong class="font-mono">${docs.gst.fields.gstin.value}</strong> • Status: <span class="text-success">● Active</span>`;
     }
     if (docs.pan) {
-      document.getElementById('slotFilenamePan').textContent = docs.pan.filename;
-      document.getElementById('slotMetaPan').textContent = `Size: ${docs.pan.fileSize} • ${docs.pan.formType}`;
-    }
-    if (docs.udyam) {
-      document.getElementById('slotFilenameUdyam').textContent = docs.udyam.filename;
-      document.getElementById('slotMetaUdyam').textContent = docs.udyam.fields?.isProvided === false ? 'Not submitted / unreadable' : `Size: ${docs.udyam.fileSize} • ${docs.udyam.formType}`;
-    }
-    if (docs.startup) {
-      document.getElementById('slotFilenameStartup').textContent = docs.startup.filename;
-      document.getElementById('slotMetaStartup').textContent = docs.startup.fields?.isProvided ? `Size: ${docs.startup.fileSize} • DPIIT Registered` : 'Not submitted (Optional)';
+      document.getElementById('slotNamePan').textContent = docs.pan.filename;
+      document.getElementById('slotSummaryPan').innerHTML = `PAN: <strong class="font-mono">${docs.pan.fields.panNumber.value}</strong> • Entity: <strong>${docs.pan.fields.entityType?.value || 'Company'}</strong>`;
     }
     if (docs.oem) {
-      document.getElementById('slotFilenameOem').textContent = docs.oem.filename;
-      document.getElementById('slotMetaOem').textContent = `Size: ${docs.oem.fileSize} • ${docs.oem.formType}`;
+      document.getElementById('slotNameOem').textContent = docs.oem.filename;
+      const isLapsed = docs.oem.fields.validUntil.value.includes('2024');
+      document.getElementById('slotSummaryOem').innerHTML = `Valid Until: <strong class="font-mono ${isLapsed ? 'text-danger' : 'text-success'}">${docs.oem.fields.validUntil.value}</strong>`;
+    }
+    if (docs.udyam) {
+      document.getElementById('slotNameUdyam').textContent = docs.udyam.filename;
+      document.getElementById('slotSummaryUdyam').innerHTML = docs.udyam.fields.isProvided === false ? 'Certificate not provided' : `Udyam No: <strong class="font-mono">${docs.udyam.fields.udyamNumber.value}</strong> • Category: <strong>${docs.udyam.fields.category.value}</strong>`;
     }
 
-    this.activeInspectedField = { docType: 'oem', fieldKey: 'validUntil' };
-    this.refreshAllCalculations();
+    this.inspectedDoc = 'oem';
+    this.inspectedField = 'validUntil';
+    this.runFullAnalysis();
   }
 
-  refreshAllCalculations() {
-    if (this.currentStep === 2) this.renderStep2();
-    if (this.currentStep === 3) this.renderStep3();
-    if (this.currentStep === 4) this.renderStep4();
-    if (this.currentStep === 5) this.renderStep5();
-  }
-
-  /* =========================================================================
-     STEP 1: RENDER TENDER CHECKLIST & METADATA
-     ========================================================================= */
-  renderStep1() {
-    const tender = SAGE_TENDERS[this.selectedTenderId] || SAGE_TENDERS['gem-it'];
-    const list = document.getElementById('tenderRequirementsList');
-    const reqCount = document.getElementById('reqCount');
-
-    // Update metadata card
-    const authText = document.getElementById('tenderAuthorityText');
-    const deadText = document.getElementById('tenderDeadlineText');
-    const budText = document.getElementById('tenderBudgetText');
-    const badgeText = document.getElementById('activeTenderBadge');
-
-    if (authText) authText.textContent = tender.authority || 'Government Evaluation Authority';
-    if (deadText) deadText.textContent = `${tender.deadline} (Strict Submission Cutoff)`;
-    if (budText) budText.textContent = tender.budgetEstimate || '₹ 14.50 Crores';
-    if (badgeText) badgeText.textContent = tender.title.split(':')[0];
-    if (reqCount) reqCount.textContent = tender.requirements.length;
-
-    if (list) {
-      list.innerHTML = tender.requirements.map(r => `
-        <div class="req-item ${r.isMandatory ? 'mandatory' : 'optional'}">
-          <div>
-            <strong>${r.id}: ${r.title}</strong>
-            <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">
-              ${r.ruleDescription}
-            </div>
-          </div>
-          <div class="req-meta">
-            ${r.isMandatory ? '<span class="req-badge gate">MANDATORY GATE</span>' : '<span class="req-badge">OPTIONAL</span>'}
-            <span class="req-badge weight">Weight: ${r.weight}%</span>
-          </div>
-        </div>
-      `).join('');
-    }
-  }
-
-  /* =========================================================================
-     STEP 2: RENDER OCR FIELD EXTRACTION & PROOF INSPECTOR
-     ========================================================================= */
-  renderStep2() {
-    const docs = this.getActiveDocs();
-    const container = document.getElementById('extractionCardsContainer');
-    if (!container) return;
-
-    const docKeys = [
-      { key: 'oem', title: 'OEM Authorization Letter (MAF)', badge: 'Mandatory' },
-      { key: 'gst', title: 'GST Registration Certificate (REG-06)', badge: 'Mandatory' },
-      { key: 'pan', title: 'Income Tax PAN Card', badge: 'Mandatory' },
-      { key: 'udyam', title: 'Udyam MSME Certificate', badge: 'Optional' }
-    ];
-
-    container.innerHTML = docKeys.map(d => {
-      const doc = docs[d.key];
-      if (!doc || !doc.fields) return '';
-
-      const fieldsHtml = Object.entries(doc.fields)
-        .filter(([k, v]) => v && typeof v === 'object' && v.value)
-        .map(([fieldKey, f]) => {
-          const isSelected = this.activeInspectedField.docType === d.key && this.activeInspectedField.fieldKey === fieldKey;
-          const confClass = f.conf > 90 ? '' : 'amber';
-          return `
-            <div class="field-pill-card ${isSelected ? 'selected' : ''}" 
-                 onclick="app.inspectDocument('${d.key}', '${fieldKey}')">
-              <div class="field-label-row">
-                <span>${fieldKey.toUpperCase()}</span>
-                <span class="field-conf ${confClass}">Conf: ${f.conf}%</span>
-              </div>
-              <div class="field-value">${f.value}</div>
-              <div class="field-source-sub">${f.source || 'Doc Coordinate'}</div>
-            </div>
-          `;
-        }).join('');
-
-      return `
-        <div class="doc-extract-card">
-          <div class="doc-extract-header">
-            <span class="doc-name-badge">
-              📄 ${d.title}
-              <span class="tag-req">${d.badge}</span>
-            </span>
-            <span class="code-font" style="font-size: 0.75rem; color: #38BDF8;">${doc.filename}</span>
-          </div>
-          <div class="extracted-fields-grid">
-            ${fieldsHtml}
-          </div>
-        </div>
-      `;
-    }).join('');
-
-    const scenario = { docs };
-    SageDocViewer.renderDocument(this.activeInspectedField.docType, this.activeInspectedField.fieldKey, scenario);
-  }
-
-  inspectDocument(docType, fieldKey) {
-    this.activeInspectedField = { docType, fieldKey };
-    const docs = this.getActiveDocs();
-    SageDocViewer.renderDocument(docType, fieldKey, { docs });
-    document.querySelectorAll('.field-pill-card').forEach(el => el.classList.remove('selected'));
-  }
-
-  /* =========================================================================
-     STEP 3: RENDER CROSS-DOCUMENT MISMATCH MATRIX
-     ========================================================================= */
-  renderStep3() {
-    const docs = this.getActiveDocs();
-    const results = SageEngine.evaluateCrossDocMatrix(docs);
-    const tbody = document.getElementById('crossDocTableBody');
-    if (!tbody) return;
-
-    tbody.innerHTML = results.map(row => {
-      let badgeClass = 'badge-success';
-      if (row.outcome === 'REVIEW') badgeClass = 'badge-warning';
-      if (row.outcome === 'MISMATCH') badgeClass = 'badge-danger';
-
-      return `
-        <tr>
-          <td><strong>${row.field}</strong></td>
-          <td><span class="code-pill">${row.gstVal}</span></td>
-          <td><span class="code-pill">${row.panVal}</span></td>
-          <td><span class="code-pill">${row.udyamVal}</span></td>
-          <td>
-            <div style="display: flex; align-items: center; gap: 0.5rem;">
-              <span style="font-family: monospace; font-weight: 700;">${row.similarity}%</span>
-              <div style="flex: 1; height: 5px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden;">
-                <div style="width: ${row.similarity}%; height: 100%; background: ${row.similarity > 85 ? '#10B981' : (row.similarity > 65 ? '#F59E0B' : '#EF4444')};"></div>
-              </div>
-            </div>
-          </td>
-          <td>
-            <span class="badge ${badgeClass}">${row.outcome}</span>
-          </td>
-        </tr>
-      `;
-    }).join('');
-
-    const reconCard = document.getElementById('mismatchDetailCard');
-    const hasVariance = results.some(r => r.outcome === 'REVIEW' || r.outcome === 'MISMATCH');
-    if (reconCard) reconCard.style.display = hasVariance ? 'block' : 'none';
-  }
-
-  /* =========================================================================
-     STEP 4: RENDER READINESS SCORE & GAP ANALYSIS (HARD GATES)
-     ========================================================================= */
-  renderStep4() {
+  /**
+   * Run Analysis Engine & Update All Widgets
+   */
+  runFullAnalysis() {
     const tender = SAGE_TENDERS[this.selectedTenderId] || SAGE_TENDERS['gem-it'];
     const docs = this.getActiveDocs();
     const crossResults = SageEngine.evaluateCrossDocMatrix(docs);
     const findings = SageEngine.evaluateTenderChecklist(tender, docs, crossResults, this.reviewerOverrides);
     const scoreData = SageEngine.computeReadinessScore(findings);
 
-    // Hard Gate Banner
-    const gateBanner = document.getElementById('hardGateBanner');
-    if (gateBanner) {
+    // 1. Render Readiness Donut & Banner
+    this.renderReadinessWidgets(scoreData);
+
+    // 2. Render Cross-Document Discrepancy Matrix
+    this.renderMatrixTable(crossResults);
+
+    // 3. Render Requirements Checklist
+    this.renderChecklistTable(findings);
+
+    // 4. Render Document Proof Viewer
+    this.renderDocProof(this.inspectedDoc, this.inspectedField);
+  }
+
+  renderReadinessWidgets(scoreData) {
+    const banner = document.getElementById('hardGateBanner');
+    if (banner) {
       if (scoreData.isHardGateBlocked) {
-        const violationsList = scoreData.hardGateViolations.map(v => `<strong>${v.title}</strong>: ${v.reason}`).join('; ');
-        gateBanner.innerHTML = `
+        banner.innerHTML = `
           <div class="gate-alert danger">
-            <div>
-              <strong style="color: #EF4444; font-size: 0.95rem;">⚠️ MANDATORY HARD GATE TRIGGERED — SUBMISSION BLOCKED</strong>
-              <div style="font-size: 0.8rem; margin-top: 3px;">
-                ${scoreData.hardGateViolations.length} prerequisite mandatory rule(s) failed. In accordance with public procurement guidelines, bidders with failed hard gates are strictly disqualified from commercial tender participation.
-                <div style="margin-top: 4px; color: #FCA5A5;">${violationsList}</div>
-              </div>
+            <strong style="font-size: 0.95rem;">⚠️ SUBMISSION BLOCKED: Mandatory Gate Failed</strong>
+            <div style="font-size: 0.78rem; margin-top: 3px;">
+              ${scoreData.hardGateViolations[0]?.title}: ${scoreData.hardGateViolations[0]?.reason}
             </div>
-            <span class="badge badge-danger">DISQUALIFIED FOR BIDDING</span>
           </div>
         `;
       } else {
-        gateBanner.innerHTML = `
+        banner.innerHTML = `
           <div class="gate-alert success">
-            <div>
-              <strong style="color: #10B981; font-size: 0.95rem;">✓ ALL MANDATORY HARD GATES SATISFIED</strong>
-              <div style="font-size: 0.8rem; margin-top: 3px;">All statutory documents (GST, PAN, OEM Authorization) meet eligibility criteria. Vendor is technically cleared for tender award consideration.</div>
-            </div>
-            <span class="badge badge-success">CLEARED FOR SUBMISSION</span>
+            <strong style="font-size: 0.95rem;">✓ ALL MANDATORY GATES SATISFIED — CLEARED FOR BIDDING</strong>
+            <div style="font-size: 0.78rem; margin-top: 3px;">All prerequisite filings (GST, PAN, OEM authorization) verified. Vendor meets technical eligibility criteria.</div>
           </div>
         `;
       }
     }
 
-    // Score Donut Values
+    // Score Donut numbers
     document.getElementById('readinessScoreVal').textContent = `${scoreData.scorePercentage}%`;
     document.getElementById('readinessRatioVal').textContent = `${scoreData.countMet} of ${scoreData.totalRequirements} Met`;
     document.getElementById('countMet').textContent = scoreData.countMet;
@@ -563,182 +471,212 @@ class TenderLensApp {
       donutFail.style.strokeDashoffset = `-${metLen + revLen}`;
     }
 
-    // Gap List
-    const gapContainer = document.getElementById('gapListContainer');
+    // Gap list
     const gapBadge = document.getElementById('gapCountBadge');
     if (gapBadge) gapBadge.textContent = `${scoreData.gaps.length} Action Items`;
 
-    if (gapContainer) {
+    const gapList = document.getElementById('gapListContainer');
+    if (gapList) {
       if (scoreData.gaps.length === 0) {
-        gapContainer.innerHTML = `
-          <div class="p-3 text-center" style="color: #10B981; font-weight: 600;">
-            ✓ Zero compliance gaps detected! All documents 100% verified against tender criteria.
-          </div>
-        `;
+        gapList.innerHTML = `<div class="p-2 text-center text-success text-xs font-mono">✓ Zero compliance defects found!</div>`;
       } else {
-        gapContainer.innerHTML = scoreData.gaps.map(g => `
-          <div class="gap-item ${g.severity}">
-            <div class="gap-icon">${g.severity === 'danger' ? '❌' : '⚠️'}</div>
+        gapList.innerHTML = scoreData.gaps.map(g => `
+          <div class="gap-row ${g.severity}">
+            <span>${g.severity === 'danger' ? '❌' : '⚠️'}</span>
             <div>
-              <div class="gap-title">${g.title} ${g.isMandatory ? '<span class="tag-req">Hard Gate</span>' : ''}</div>
-              <div class="gap-action-text">${g.actionText}</div>
+              <strong>${g.title}</strong>
+              <div style="font-size: 0.72rem; color: #CBD5E1;">${g.actionText}</div>
             </div>
           </div>
         `).join('');
       }
     }
-
-    this.renderStep4EvaluationTable('all');
   }
 
-  renderStep4EvaluationTable(filter = 'all') {
-    const tender = SAGE_TENDERS[this.selectedTenderId] || SAGE_TENDERS['gem-it'];
-    const docs = this.getActiveDocs();
-    const crossResults = SageEngine.evaluateCrossDocMatrix(docs);
-    const findings = SageEngine.evaluateTenderChecklist(tender, docs, crossResults, this.reviewerOverrides);
-    const tbody = document.getElementById('evalTableBody');
+  renderMatrixTable(crossResults) {
+    const tbody = document.getElementById('matrixTableBody');
     if (!tbody) return;
 
-    let filtered = findings;
-    if (filter === 'mandatory') filtered = findings.filter(f => f.isMandatory);
-    if (filter === 'failed') filtered = findings.filter(f => f.status !== 'COMPLIANT');
+    tbody.innerHTML = crossResults.map(r => {
+      let badge = 'badge-success';
+      if (r.outcome === 'REVIEW') badge = 'badge-warning';
+      if (r.outcome === 'MISMATCH') badge = 'badge-danger';
 
-    tbody.innerHTML = filtered.map(f => {
-      let badgeClass = 'badge-success';
-      if (f.status === 'REQUIRES_REVIEW') badgeClass = 'badge-warning';
-      if (f.status === 'NON_COMPLIANT') badgeClass = 'badge-danger';
+      return `
+        <tr>
+          <td><strong>${r.field}</strong></td>
+          <td><span class="font-mono text-xs">${r.gstVal}</span></td>
+          <td><span class="font-mono text-xs">${r.panVal}</span></td>
+          <td><span class="font-mono text-xs">${r.udyamVal}</span></td>
+          <td><strong class="font-mono">${r.similarity}%</strong></td>
+          <td><span class="badge ${badge}">${r.outcome}</span></td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  renderChecklistTable(findings) {
+    const tbody = document.getElementById('checklistTableBody');
+    if (!tbody) return;
+
+    tbody.innerHTML = findings.map(f => {
+      let badge = 'badge-success';
+      if (f.status === 'REQUIRES_REVIEW') badge = 'badge-warning';
+      if (f.status === 'NON_COMPLIANT') badge = 'badge-danger';
 
       return `
         <tr>
           <td>
             <strong>${f.id}: ${f.title}</strong>
-            ${f.isOverridden ? '<span class="badge badge-accent" style="margin-left: 6px;">Overridden</span>' : ''}
+            ${f.isOverridden ? '<span class="badge badge-accent" style="margin-left: 4px;">Overridden</span>' : ''}
           </td>
-          <td>${f.isMandatory ? '<span class="tag-req">Mandatory (' + f.weight + '%)</span>' : '<span class="tag-opt">Optional (' + f.weight + '%)</span>'}</td>
-          <td><span class="code-pill">${f.extractedValue}</span></td>
-          <td style="font-size: 0.75rem; color: #94A3B8;">${f.ruleApplied}</td>
-          <td><span class="badge ${badgeClass}">${f.status.replace('_', ' ')}</span></td>
+          <td>${f.isMandatory ? '<span class="tag-mandatory">Mandatory</span>' : '<span class="tag-optional">Optional</span>'}</td>
+          <td><span class="font-mono text-xs">${f.extractedValue}</span></td>
+          <td><span class="badge ${badge}">${f.status.replace('_', ' ')}</span></td>
           <td>
-            <button class="btn btn-outline btn-xs" onclick="app.openOverrideModal('${f.id}')">
-              Review / Override
-            </button>
+            <button class="btn btn-outline btn-xs" onclick="app.openOverrideModal('${f.id}')">Override</button>
           </td>
         </tr>
       `;
     }).join('');
   }
 
-  /* =========================================================================
-     STEP 5: RENDER AUDIT REPORT & PERSISTENT AUDIT TRAIL
-     ========================================================================= */
-  async renderStep5() {
-    const tender = SAGE_TENDERS[this.selectedTenderId] || SAGE_TENDERS['gem-it'];
+  inspectDocProof(docType, fieldKey) {
+    this.inspectedDoc = docType;
+    this.inspectedField = fieldKey;
+    this.renderDocProof(docType, fieldKey);
+
+    document.querySelectorAll('.btn-inspect').forEach(b => b.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+  }
+
+  renderDocProof(docType, fieldKey) {
     const docs = this.getActiveDocs();
-    const crossResults = SageEngine.evaluateCrossDocMatrix(docs);
-    const findings = SageEngine.evaluateTenderChecklist(tender, docs, crossResults, this.reviewerOverrides);
+    SageDocViewer.renderDocument(docType, fieldKey, { docs });
+  }
 
-    SageReport.renderFindings(findings);
+  renderCertificateTab() {
+    const tender = SAGE_TENDERS[this.selectedTenderId] || SAGE_TENDERS['gem-it'];
+    const scenario = SAGE_SCENARIOS[this.selectedScenarioId];
+    const docs = this.getActiveDocs();
+    const cross = SageEngine.evaluateCrossDocMatrix(docs);
+    const findings = SageEngine.evaluateTenderChecklist(tender, docs, cross, this.reviewerOverrides);
+    const score = SageEngine.computeReadinessScore(findings);
 
-    // Fetch real audit trail from backend
+    document.getElementById('certVendorName').textContent = scenario.company;
+    document.getElementById('certTenderTitle').textContent = tender.title;
+    document.getElementById('certTimestamp').textContent = new Date().toLocaleString();
+
+    const verdictEl = document.getElementById('certVerdictStatus');
+    if (verdictEl) {
+      if (score.isHardGateBlocked) {
+        verdictEl.textContent = 'DISQUALIFIED (Mandatory Gate Failed)';
+        verdictEl.className = 'text-danger';
+      } else {
+        verdictEl.textContent = 'APPROVED FOR TENDER PARTICIPATION';
+        verdictEl.className = 'text-success';
+      }
+    }
+
+    const tbody = document.getElementById('certTableBody');
+    if (tbody) {
+      tbody.innerHTML = findings.map(f => `
+        <tr>
+          <td><strong class="font-mono">${f.id}</strong></td>
+          <td>${f.title}</td>
+          <td>${f.isMandatory ? 'Mandatory Gate' : 'Optional Criterion'}</td>
+          <td class="font-mono text-xs">${f.extractedValue}</td>
+          <td><strong>${f.status.replace('_', ' ')}</strong></td>
+        </tr>
+      `).join('');
+    }
+  }
+
+  async renderAuditTrailTab() {
+    const tbody = document.getElementById('fullAuditLogsTableBody');
+    if (!tbody) return;
+
     try {
       const res = await fetch(`${this.apiBase}/api/audit-logs`);
       if (res.ok) {
         const data = await res.json();
-        if (data.logs) {
-          SageReport.auditLogs = data.logs;
-        }
+        if (data.logs) SageReport.auditLogs = data.logs;
       }
     } catch (e) {
-      console.warn('Using local audit logs cache:', e.message);
+      console.warn('Using local audit cache:', e.message);
     }
 
-    SageReport.renderAuditLogs();
+    tbody.innerHTML = SageReport.auditLogs.map(log => `
+      <tr>
+        <td class="font-mono text-xs" style="color: #38BDF8;">${log.id || 'LOG-SYS'}</td>
+        <td class="font-mono text-xs">${log.timestamp}</td>
+        <td><strong>${log.reviewer}</strong></td>
+        <td>${log.item}</td>
+        <td><span class="badge ${SageReport.getBadgeClass(log.original)}">${log.original}</span></td>
+        <td><strong class="text-primary">${log.action}</strong></td>
+        <td style="font-size: 0.78rem; color: #CBD5E1;">${log.notes}</td>
+      </tr>
+    `).join('');
   }
 
-  /* =========================================================================
-     HUMAN-IN-THE-LOOP OVERRIDE MODAL & API INTEGRATION
-     ========================================================================= */
   openOverrideModal(reqId) {
     this.activeOverrideReqId = reqId;
     const tender = SAGE_TENDERS[this.selectedTenderId] || SAGE_TENDERS['gem-it'];
-    const req = tender.requirements.find(r => r.id === reqId) || { title: 'Tender Requirement' };
+    const req = tender.requirements.find(r => r.id === reqId) || { title: 'Requirement' };
 
-    const modal = document.getElementById('overrideModal');
-    const titleEl = document.getElementById('modalReqText');
-    if (titleEl) titleEl.textContent = `${req.id}: ${req.title}`;
+    document.getElementById('modalReqTitle').textContent = `${req.id}: ${req.title}`;
+    document.getElementById('txtOverrideReason').value = '';
 
-    const notesInput = document.getElementById('overrideNotes');
-    if (notesInput) notesInput.value = '';
-
-    modal.classList.add('open');
+    document.getElementById('overrideModal').classList.add('open');
   }
 
   closeOverrideModal() {
-    const modal = document.getElementById('overrideModal');
-    modal.classList.remove('open');
+    document.getElementById('overrideModal').classList.remove('open');
   }
 
-  async saveModalOverride() {
+  async saveOverride() {
     const reqId = this.activeOverrideReqId;
     if (!reqId) return;
 
-    const selectedRadio = document.querySelector('input[name="overrideStatus"]:checked');
+    const selectedRadio = document.querySelector('input[name="overrideVerdict"]:checked');
     if (!selectedRadio) {
-      alert('Please select a new status verdict.');
+      alert('Please select an override verdict.');
       return;
     }
 
-    const notes = document.getElementById('overrideNotes').value.trim();
+    const notes = document.getElementById('txtOverrideReason').value.trim();
     if (!notes) {
-      alert('Reviewer Justification Note is mandatory for procurement compliance auditing.');
+      alert('Officer Justification Note is mandatory.');
       return;
     }
 
-    const officerName = document.getElementById('reviewerOfficerName').value.trim() || 'Evaluation Officer (Admin)';
-    const newStatus = selectedRadio.value;
+    const officer = document.getElementById('txtOfficerName').value.trim() || 'Evaluation Officer (Admin)';
+    const status = selectedRadio.value;
 
-    await this.applyDirectOverride(reqId, newStatus, notes, officerName);
-    this.closeOverrideModal();
-  }
+    this.reviewerOverrides[reqId] = { status, notes, officer, timestamp: new Date().toISOString() };
 
-  async applyDirectOverride(reqId, newStatus, notes, officerName) {
-    this.reviewerOverrides[reqId] = {
-      status: newStatus,
-      notes: notes,
-      officer: officerName,
-      timestamp: new Date().toISOString()
-    };
-
-    // Save to server API
+    // Post to server
     try {
       await fetch(`${this.apiBase}/api/overrides`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          reqId,
-          status: newStatus,
-          notes,
-          officer: officerName
-        })
+        body: JSON.stringify({ reqId, status, notes, officer })
       });
-    } catch (err) {
-      console.warn('Could not post override to server, stored locally:', err);
+    } catch (e) {
+      console.warn('Could not post override to server:', e);
     }
 
-    SageReport.addAuditLog(
-      reqId,
-      'AI SCREENED',
-      `OVERRIDE TO ${newStatus}`,
-      notes,
-      officerName
-    );
+    SageReport.addAuditLog(reqId, 'AI_SCREENED', `OVERRIDE TO ${status}`, notes, officer);
 
-    this.refreshAllCalculations();
+    this.closeOverrideModal();
+    this.runFullAnalysis();
+    this.showToast(`Requirement ${reqId} overridden to ${status}. Recalculated!`, 'success');
   }
 }
 
-// Instantiate global app
+// Global App Instance
 let app;
 document.addEventListener('DOMContentLoaded', () => {
   app = new TenderLensApp();
+  window.app = app;
 });

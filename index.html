@@ -3,814 +3,731 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TenderLens | Enterprise AI Tender & Vendor Compliance Platform</title>
-  <meta name="description" content="Enterprise automated tender document screening, OCR verification, cross-document discrepancy detection, and audit-ready vendor compliance reports.">
+  <title>TenderLens | Enterprise Tender Screening & Vendor Compliance Intelligence</title>
+  <meta name="description" content="AI-Powered Tender Document Screening, Cross-Document Discrepancy Detection, and Audit-Ready Compliance Intelligence for Public Procurement.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="dark-theme">
-  <!-- Top Global Header -->
-  <header class="app-header">
-    <div class="header-left">
-      <div class="brand-badge">
-        <div class="brand-logo-icon">
+
+  <!-- Minimalist Top Navigation Header -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <div class="brand-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-            <path d="M2 12h20"/>
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M12 3v18"/>
+            <path d="M3 12h18"/>
+            <circle cx="12" cy="12" r="4"/>
           </svg>
         </div>
-        <div class="brand-text">
-          <div class="brand-title">TenderLens <span class="tag-enterprise">ENTERPRISE SAAS</span></div>
-          <div class="brand-subtitle">AI-Powered Tender Document Screening & Vendor Compliance Intelligence</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="header-right">
-      <!-- ESG & SDG Impact Module -->
-      <div class="sdg-container">
-        <div class="sdg-item sdg-16" title="SDG 16: Peace, Justice & Strong Institutions - 100% Traceable Government Screening">
-          <span class="sdg-num">16</span>
-          <span class="sdg-label">Audit Transparency</span>
-        </div>
-        <div class="sdg-item sdg-9" title="SDG 9: Industry, Innovation & Infrastructure - AI-Driven Procurement Productivity">
-          <span class="sdg-num">9</span>
-          <span class="sdg-label">Procurement AI</span>
-        </div>
-        <div class="sdg-item sdg-8" title="SDG 8: Decent Work & Economic Growth - Equitable MSME & Startup Onboarding">
-          <span class="sdg-num">8</span>
-          <span class="sdg-label">MSME Growth</span>
+        <div class="brand-info">
+          <div class="brand-title">TenderLens <span class="badge-tag">AI PROCUREMENT</span></div>
+          <div class="brand-tagline">Automated Vendor Compliance & Verification Platform</div>
         </div>
       </div>
 
-      <!-- Live API Status Indicator -->
-      <div class="api-status-pill" id="apiStatusPill">
-        <span class="dot-live"></span>
-        <span class="status-text">Backend API Live: <strong id="apiPortLabel">Port 8080</strong></span>
-      </div>
+      <!-- Navigation Tabs -->
+      <nav class="nav-tabs">
+        <button class="tab-link active" data-tab="tabWorkspace" id="btnTabWorkspace">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Audit Workspace
+        </button>
+        <button class="tab-link" data-tab="tabCertificate" id="btnTabCertificate">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Compliance Certificate
+        </button>
+        <button class="tab-link" data-tab="tabAuditTrail" id="btnTabAuditTrail">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Audit Trail Log
+        </button>
+        <button class="tab-link" data-tab="tabEsgImpact" id="btnTabEsg">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/></svg>
+          ESG & SDG Metrics
+        </button>
+      </nav>
 
-      <!-- User Role Profile -->
-      <div class="user-role-badge">
-        <div class="role-avatar">EO</div>
-        <div class="role-meta">
-          <span class="role-name">Evaluation Officer</span>
-          <span class="role-team">Tender Committee Admin</span>
+      <!-- Right Header Actions -->
+      <div class="nav-right">
+        <div class="user-profile-badge" id="userProfileBadge">
+          <div class="user-avatar" id="navUserAvatar">V</div>
+          <div>
+            <div class="user-name" id="navUserName">Vanshika (Admin)</div>
+            <div class="user-role-tag" id="navUserRole">Procurement Officer</div>
+          </div>
+          <button class="btn btn-xs btn-outline" id="btnNavAuthAction" style="margin-left: 6px;">Log Out</button>
         </div>
+        <button class="btn btn-outline btn-sm" id="btnDownloadSamples" title="Download real test files to test uploading">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Test Files
+        </button>
       </div>
     </div>
   </header>
 
-  <!-- Top Enterprise Metrics Banner -->
-  <div class="metrics-strip">
-    <div class="metric-block">
-      <span class="metric-val">42</span>
-      <span class="metric-label">Active Tenders</span>
-    </div>
-    <div class="metric-divider"></div>
-    <div class="metric-block">
-      <span class="metric-val">1,280</span>
-      <span class="metric-label">Vendors Screened</span>
-    </div>
-    <div class="metric-divider"></div>
-    <div class="metric-block">
-      <span class="metric-val text-success">82%</span>
-      <span class="metric-label">Screening Time Saved</span>
-    </div>
-    <div class="metric-divider"></div>
-    <div class="metric-block">
-      <span class="metric-val text-warning">0</span>
-      <span class="metric-label">Black-Box Decisions</span>
-    </div>
-    <div class="metric-divider"></div>
-    <div class="metric-block">
-      <span class="metric-val text-primary">100%</span>
-      <span class="metric-label">Deterministic Audit Trail</span>
-    </div>
-  </div>
-
-  <!-- Workflow Pipeline Navigation -->
-  <nav class="pipeline-nav">
-    <div class="nav-steps">
-      <button class="step-btn active" data-step="1" id="navStep1">
-        <span class="step-circle">1</span>
-        <span class="step-label">Tender & Ingestion</span>
-      </button>
-      <div class="step-connector"></div>
-      <button class="step-btn" data-step="2" id="navStep2">
-        <span class="step-circle">2</span>
-        <span class="step-label">OCR & Field Extraction</span>
-      </button>
-      <div class="step-connector"></div>
-      <button class="step-btn" data-step="3" id="navStep3">
-        <span class="step-circle">3</span>
-        <span class="step-label">Cross-Document Matrix</span>
-      </button>
-      <div class="step-connector"></div>
-      <button class="step-btn" data-step="4" id="navStep4">
-        <span class="step-circle">4</span>
-        <span class="step-label">Readiness & Hard Gates</span>
-      </button>
-      <div class="step-connector"></div>
-      <button class="step-btn" data-step="5" id="navStep5">
-        <span class="step-circle">5</span>
-        <span class="step-label">Audit Report & Certification</span>
-      </button>
-    </div>
-
-    <div class="nav-actions">
-      <button id="toggleSampleFilesBtn" class="btn btn-secondary btn-sm" title="Download real test text/PDF files to upload">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Sample Test Files
-      </button>
-      <button id="quickPresetBtn" class="btn btn-secondary btn-sm" title="Switch vendor test benchmarks">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-        Enterprise Scenarios
-      </button>
-      <button id="resetAppBtn" class="btn btn-ghost btn-sm" title="Reset current session">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-        Reset
-      </button>
-    </div>
-  </nav>
-
-  <!-- Downloadable Sample Files Drawer -->
-  <div class="sample-files-drawer" id="sampleFilesDrawer" style="display: none;">
-    <div class="drawer-inner">
-      <div class="drawer-header">
-        <div>
-          <h4>Download Realistic Sample Files to Test Real Uploads</h4>
-          <p class="text-muted">Use these prepared test files to test uploading real documents through the TenderLens backend parser.</p>
-        </div>
-        <button class="btn btn-ghost btn-sm" id="closeDrawerBtn">&times;</button>
+  <!-- Downloadable Test Documents Modal / Dropdown -->
+  <div class="samples-modal" id="samplesModal" style="display: none;">
+    <div class="samples-card">
+      <div class="samples-header">
+        <h4>Download Realistic Sample Files to Test Real Uploads</h4>
+        <button class="btn-close" id="btnCloseSamplesModal">&times;</button>
       </div>
-      <div class="sample-links-grid">
-        <a href="/samples/sample_gst_certificate.txt" download class="sample-link-card">
-          <span class="file-icon">📄</span>
-          <div>
-            <strong>sample_gst_certificate.txt</strong>
-            <div class="text-xs text-muted">Form GST REG-06 • GSTIN: 07ABCDE1234F1Z5</div>
-          </div>
+      <p class="text-muted text-sm mb-3">Download these test documents to your computer, then click "Upload File" in any slot below to test the live backend parser:</p>
+      <div class="samples-grid">
+        <a href="/samples/sample_gst_certificate.txt" download class="sample-item">
+          <span>📄 GST REG-06 Certificate</span>
           <span class="badge badge-primary">Download</span>
         </a>
-        <a href="/samples/sample_pan_card.txt" download class="sample-link-card">
-          <span class="file-icon">💳</span>
-          <div>
-            <strong>sample_pan_card.txt</strong>
-            <div class="text-xs text-muted">Income Tax Dept • PAN: ABCDE1234F</div>
-          </div>
+        <a href="/samples/sample_pan_card.txt" download class="sample-item">
+          <span>💳 ITD PAN Card</span>
           <span class="badge badge-primary">Download</span>
         </a>
-        <a href="/samples/sample_udyam_registration.txt" download class="sample-link-card">
-          <span class="file-icon">🏢</span>
-          <div>
-            <strong>sample_udyam_registration.txt</strong>
-            <div class="text-xs text-muted">Ministry of MSME • DL-08-0019284</div>
-          </div>
+        <a href="/samples/sample_udyam_registration.txt" download class="sample-item">
+          <span>🏢 MSME Udyam Registration</span>
           <span class="badge badge-primary">Download</span>
         </a>
-        <a href="/samples/sample_oem_letter.txt" download class="sample-link-card">
-          <span class="file-icon">📜</span>
-          <div>
-            <strong>sample_oem_letter.txt</strong>
-            <div class="text-xs text-muted">OEM Authorization • Valid until 31 Mar 2024 (Expired)</div>
-          </div>
+        <a href="/samples/sample_oem_letter.txt" download class="sample-item">
+          <span>📜 OEM Authorization (Expired)</span>
           <span class="badge badge-warning">Download</span>
         </a>
       </div>
     </div>
   </div>
 
-  <!-- Enterprise Scenario Selector Bar -->
-  <div class="scenario-banner" id="scenarioBanner">
-    <div class="scenario-content">
-      <div class="scenario-info">
-        <span class="badge badge-accent">Vendor Benchmark Bench</span>
-        <span>Select preloaded corporate vendor data or upload your own files below:</span>
-      </div>
-      <div class="scenario-buttons">
-        <button class="btn btn-chip active" data-preset="sample-traders">
-          <span class="status-indicator warning"></span>
-          <strong>Benchmark 1: Sample Traders Pvt Ltd</strong>
-          <span class="chip-desc">Name discrepancy & Expired OEM auth (Hard Gate Triggered)</span>
-        </button>
-        <button class="btn btn-chip" data-preset="compliant-vendor">
-          <span class="status-indicator success"></span>
-          <strong>Benchmark 2: Bharat Tech Systems</strong>
-          <span class="chip-desc">100% Compliant • OEM valid through 2027 • Clean match</span>
-        </button>
-        <button class="btn btn-chip" data-preset="fraud-risk">
-          <span class="status-indicator danger"></span>
-          <strong>Benchmark 3: Apex Global Infotech</strong>
-          <span class="chip-desc">Critical GSTIN vs PAN Mismatch • Tamper risk</span>
-        </button>
-      </div>
-    </div>
-  </div>
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
 
-  <!-- Main Workspace -->
-  <main class="main-content">
+  <!-- MAIN TAB CONTENT CONTAINER -->
+  <main class="main-wrapper">
 
-    <!-- STEP 1: TENDER SPECIFICATIONS & INGESTION -->
-    <section class="step-view active" id="viewStep1">
-      <div class="view-grid-two-col">
-        <!-- Left Column: Tender Configuration -->
-        <div class="card glass-card">
-          <div class="card-header">
-            <div class="card-title-group">
-              <span class="step-badge">1.1</span>
-              <div>
-                <h2>Tender Specification & Rule Set</h2>
-                <p class="text-muted">Procurement checklist & mandatory hard gate parameters</p>
-              </div>
-            </div>
-            <span class="badge badge-primary" id="activeTenderBadge">GeM Portal IT Hardware</span>
-          </div>
+    <!-- =====================================================================
+         TAB 1: AUDIT WORKSPACE (Primary Interactive Command Center)
+         ===================================================================== -->
+    <div class="tab-content-panel active" id="tabWorkspace">
 
-          <div class="tender-picker-row">
-            <label for="tenderSelect" class="form-label">Active Procurement Tender:</label>
-            <select id="tenderSelect" class="form-select">
-              <option value="gem-it">GeM Portal: IT Hardware & Peripherals Supply (RFP-2026-889)</option>
-              <option value="railway-telecom">Indian Railways: Telemetry Equipment Procurement (IREPS-440)</option>
-              <option value="smartcity-iot">Smart City Mission: IoT Environmental Sensors Supply (SCM-091)</option>
-            </select>
-          </div>
-
-          <!-- Tender Metadata Card -->
-          <div class="tender-meta-summary">
-            <div class="meta-item">
-              <span class="meta-label">Procuring Authority:</span>
-              <strong id="tenderAuthorityText">Ministry of Electronics & Information Technology</strong>
-            </div>
-            <div class="meta-item">
-              <span class="meta-label">Submission Deadline:</span>
-              <strong id="tenderDeadlineText" class="text-warning">31 December 2026</strong>
-            </div>
-            <div class="meta-item">
-              <span class="meta-label">Estimated Budget:</span>
-              <strong id="tenderBudgetText">₹ 14.50 Crores</strong>
-            </div>
-          </div>
-
-          <div class="checklist-preview-box mt-3">
-            <div class="checklist-header">
-              <span class="sub-heading">Evaluation Checklist Requirements (<span id="reqCount">8</span> items)</span>
-              <span class="badge badge-outline-warning">Mandatory Rules = HARD GATES</span>
-            </div>
-            <div class="checklist-items-list" id="tenderRequirementsList">
-              <!-- Dynamically populated via API -->
-            </div>
-          </div>
+      <!-- Tender Selector & Benchmark Case Switcher Bar -->
+      <div class="control-strip">
+        <div class="tender-picker-group">
+          <label class="control-label" for="tenderSelect">Target Tender:</label>
+          <select id="tenderSelect" class="form-select-sm">
+            <option value="gem-it">GeM Portal: IT Hardware & Peripherals Supply (RFP-2026-889)</option>
+            <option value="railway-telecom">Indian Railways: Telemetry Equipment Procurement (IREPS-440)</option>
+            <option value="smartcity-iot">Smart City Mission: IoT Environmental Sensors Supply (SCM-091)</option>
+          </select>
         </div>
 
-        <!-- Right Column: Real Document Ingestion & File Upload -->
-        <div class="card glass-card">
-          <div class="card-header">
-            <div class="card-title-group">
-              <span class="step-badge">1.2</span>
-              <div>
-                <h2>Vendor Document Ingestion</h2>
-                <p class="text-muted">Upload real PDF/Text files or use benchmark test documents</p>
-              </div>
-            </div>
-            <button class="btn btn-secondary btn-sm" id="loadSelectedPresetBtn">
-              Reload Active Benchmark
-            </button>
-          </div>
-
-          <!-- Document Upload Slots (Real File Inputs) -->
-          <form id="realUploadForm" enctype="multipart/form-data">
-            <div class="upload-slots-grid">
-              
-              <!-- Slot 1: GST Certificate -->
-              <div class="upload-slot" data-doc-type="gst">
-                <div class="slot-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                </div>
-                <div class="slot-content">
-                  <div class="slot-title">GST Registration Certificate (REG-06) <span class="tag-req">Mandatory</span></div>
-                  <div class="slot-filename" id="slotFilenameGst">sample_gst_certificate.pdf (Ready)</div>
-                  <div class="slot-meta" id="slotMetaGst">Size: 412 KB • Form GST REG-06</div>
-                </div>
-                <div class="slot-action">
-                  <input type="file" name="gst" id="fileInputGst" class="file-input-hidden" accept=".pdf,.txt,.doc,.docx,.png,.jpg">
-                  <button type="button" class="btn btn-outline btn-xs" onclick="document.getElementById('fileInputGst').click()">Upload File</button>
-                </div>
-              </div>
-
-              <!-- Slot 2: PAN Details -->
-              <div class="upload-slot" data-doc-type="pan">
-                <div class="slot-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                </div>
-                <div class="slot-content">
-                  <div class="slot-title">Permanent Account Number (PAN Card) <span class="tag-req">Mandatory</span></div>
-                  <div class="slot-filename" id="slotFilenamePan">sample_pan_card.pdf (Ready)</div>
-                  <div class="slot-meta" id="slotMetaPan">Size: 284 KB • Income Tax Department</div>
-                </div>
-                <div class="slot-action">
-                  <input type="file" name="pan" id="fileInputPan" class="file-input-hidden" accept=".pdf,.txt,.doc,.docx,.png,.jpg">
-                  <button type="button" class="btn btn-outline btn-xs" onclick="document.getElementById('fileInputPan').click()">Upload File</button>
-                </div>
-              </div>
-
-              <!-- Slot 3: Udyam MSME -->
-              <div class="upload-slot" data-doc-type="udyam">
-                <div class="slot-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                </div>
-                <div class="slot-content">
-                  <div class="slot-title">Udyam MSME Registration Certificate <span class="tag-opt">Optional / EMD Exemption</span></div>
-                  <div class="slot-filename" id="slotFilenameUdyam">sample_udyam_registration.pdf (Ready)</div>
-                  <div class="slot-meta" id="slotMetaUdyam">Size: 350 KB • Ministry of MSME</div>
-                </div>
-                <div class="slot-action">
-                  <input type="file" name="udyam" id="fileInputUdyam" class="file-input-hidden" accept=".pdf,.txt,.doc,.docx,.png,.jpg">
-                  <button type="button" class="btn btn-outline btn-xs" onclick="document.getElementById('fileInputUdyam').click()">Upload File</button>
-                </div>
-              </div>
-
-              <!-- Slot 4: Startup India Recognition -->
-              <div class="upload-slot" data-doc-type="startup">
-                <div class="slot-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                </div>
-                <div class="slot-content">
-                  <div class="slot-title">Startup India DPIIT Certificate <span class="tag-opt">Optional</span></div>
-                  <div class="slot-filename" id="slotFilenameStartup">sample_startup_india.pdf (Optional)</div>
-                  <div class="slot-meta" id="slotMetaStartup">Size: 198 KB • DPIIT Recognition</div>
-                </div>
-                <div class="slot-action">
-                  <input type="file" name="startup" id="fileInputStartup" class="file-input-hidden" accept=".pdf,.txt,.doc,.docx,.png,.jpg">
-                  <button type="button" class="btn btn-outline btn-xs" onclick="document.getElementById('fileInputStartup').click()">Upload File</button>
-                </div>
-              </div>
-
-              <!-- Slot 5: OEM Authorization Letter -->
-              <div class="upload-slot" data-doc-type="oem">
-                <div class="slot-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                </div>
-                <div class="slot-content">
-                  <div class="slot-title">OEM Authorization Form (MAF) <span class="tag-req">Mandatory</span></div>
-                  <div class="slot-filename" id="slotFilenameOem">sample_oem_letter.pdf (Ready)</div>
-                  <div class="slot-meta" id="slotMetaOem">Size: 520 KB • Manufacturer Letter</div>
-                </div>
-                <div class="slot-action">
-                  <input type="file" name="oem" id="fileInputOem" class="file-input-hidden" accept=".pdf,.txt,.doc,.docx,.png,.jpg">
-                  <button type="button" class="btn btn-outline btn-xs" onclick="document.getElementById('fileInputOem').click()">Upload File</button>
-                </div>
-              </div>
-
-            </div>
-          </form>
-
-          <!-- Upload Execution Bar -->
-          <div class="upload-bottom-bar">
-            <div class="upload-summary-stat">
-              <span class="dot-live"></span>
-              <span id="stagedDocsCount">5 of 5 Documents Staged for Pipeline</span>
-            </div>
-            <button class="btn btn-primary btn-lg" id="startExtractionBtn">
-              <span>Execute AI Screening Pipeline</span>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- STEP 2: OCR & FIELD EXTRACTION (With Source Proof Viewer) -->
-    <section class="step-view" id="viewStep2">
-      <div class="section-top-bar">
-        <div>
-          <h2>OCR Extraction & Field Parsing Engine</h2>
-          <p class="text-muted">Automated field recognition with optical character confidence scores and direct source-page coordinates</p>
-        </div>
-        <div class="btn-group">
-          <button class="btn btn-secondary" id="step2BackBtn">Back to Ingestion</button>
-          <button class="btn btn-primary" id="step2NextBtn">Proceed to Cross-Doc Matrix</button>
-        </div>
-      </div>
-
-      <div class="alert-banner info">
-        <div class="alert-icon">🛡️</div>
-        <div class="alert-body">
-          <strong>Enterprise Transparency Protocol:</strong>
-          TenderLens strictly decouples <em>OCR Pixel Extraction</em> from <em>Rule-Based Validation Logic</em> and <em>Authoritative Verification</em>. No authenticity is assumed without cryptographic or official database cross-checks.
-        </div>
-      </div>
-
-      <div class="extraction-layout">
-        <!-- Extracted Fields by Document -->
-        <div class="extraction-cards-column" id="extractionCardsContainer">
-          <!-- Dynamically populated via API -->
-        </div>
-
-        <!-- Sticky High-Fidelity Proof Inspector -->
-        <div class="card glass-card evidence-inspector-sticky">
-          <div class="card-header">
-            <div class="card-title-group">
-              <div class="inspector-badge">Source Proof Inspector</div>
-              <h3 id="inspectorDocTitle">oem_letter.pdf • Page 1</h3>
-            </div>
-            <span class="badge badge-accent" id="inspectorBboxTag">Highlighting: Valid Until</span>
-          </div>
-
-          <div class="doc-viewer-wrapper" id="docViewerWrapper">
-            <div class="mock-document" id="mockDocumentContainer">
-              <!-- Rendered document image or SVG layout with bounding box overlay -->
-            </div>
-          </div>
-
-          <div class="inspector-footer">
-            <div class="confidence-indicator">
-              <span class="conf-label">Field OCR Confidence:</span>
-              <div class="conf-bar-track">
-                <div class="conf-bar-fill" id="inspectorConfBar" style="width: 94%;"></div>
-              </div>
-              <span class="conf-value" id="inspectorConfValue">94.2%</span>
-            </div>
-            <div class="inspector-hint">
-              Click any field in the left panel to inspect its visual source anchor and bounding coordinates.
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- STEP 3: CROSS-DOCUMENT MISMATCH MATRIX -->
-    <section class="step-view" id="viewStep3">
-      <div class="section-top-bar">
-        <div>
-          <span class="badge badge-primary">Core Intelligence Engine</span>
-          <h2>Cross-Document Mismatch Detection Matrix</h2>
-          <p class="text-muted">Normalized fuzzy matching across GSTIN, Income Tax PAN, Udyam MSME, and OEM Authorization</p>
-        </div>
-        <div class="btn-group">
-          <button class="btn btn-secondary" id="step3BackBtn">Back to Extraction</button>
-          <button class="btn btn-primary" id="step3NextBtn">Proceed to Readiness Score</button>
-        </div>
-      </div>
-
-      <div class="feature-pillars-grid">
-        <div class="pillar-card">
-          <div class="pillar-icon blue">🔤</div>
-          <div class="pillar-body">
-            <h4>Normalize First</h4>
-            <p>Strips punctuation, case variations, and legal entity designations ("Pvt Ltd" vs "Private Limited", "Inc").</p>
-          </div>
-        </div>
-        <div class="pillar-card">
-          <div class="pillar-icon purple">🔗</div>
-          <div class="pillar-body">
-            <h4>Use Structure</h4>
-            <p>Parses PAN from inside the 15-character GSTIN (characters 3–12) for algorithmic identity parity check.</p>
-          </div>
-        </div>
-        <div class="pillar-card">
-          <div class="pillar-icon amber">👁️</div>
-          <div class="pillar-body">
-            <h4>Review, Don't Reject</h4>
-            <p>Phonetic or token discrepancies route to human procurement officer review rather than auto-disqualifying vendors.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="card glass-card">
-        <div class="table-responsive">
-          <table class="mismatch-table" id="crossDocMismatchTable">
-            <thead>
-              <tr>
-                <th style="width: 15%;">Field</th>
-                <th style="width: 20%;">GST Certificate</th>
-                <th style="width: 18%;">PAN Card</th>
-                <th style="width: 20%;">Udyam / MSME</th>
-                <th style="width: 15%;">Fuzzy Similarity</th>
-                <th style="width: 12%;">Verdict</th>
-              </tr>
-            </thead>
-            <tbody id="crossDocTableBody">
-              <!-- Dynamically populated from API -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Reconciliation Deep Dive Card -->
-      <div class="card glass-card mt-4" id="mismatchDetailCard">
-        <div class="card-header">
-          <h3>Reconciliation Breakdown: Legal Name Variance</h3>
-          <span class="badge badge-warning">Flagged for Human Review</span>
-        </div>
-        <div class="reconciliation-grid">
-          <div class="recon-box">
-            <span class="recon-label">Token Comparison</span>
-            <div class="token-list">
-              <span class="token matched">SAMPLE</span>
-              <span class="token matched">TRADERS</span>
-              <span class="token diff">PVT LTD</span>
-              <span class="arrow">↔</span>
-              <span class="token diff">ENTERPRISES</span>
-            </div>
-            <p class="text-sm text-muted mt-2">Similarity Score: <strong>76.4%</strong> (Below strict 88% threshold)</p>
-          </div>
-          <div class="recon-box">
-            <span class="recon-label">AI Explanatory Reasoning</span>
-            <p class="text-sm">
-              The company name matches on "Sample Traders" across GST and PAN, but Udyam registration is listed under "Sample Trader Enterprises". This may indicate an unincorporated trade name or enterprise division under common ownership.
-            </p>
-          </div>
-          <div class="recon-box">
-            <span class="recon-label">Officer Quick Action</span>
-            <div class="override-action-bar">
-              <button class="btn btn-outline-success btn-sm" id="btnApproveNameVariance">Approve as Registered Alias</button>
-              <button class="btn btn-outline-danger btn-sm" id="btnRejectNameVariance">Require Formal Endorsement Letter</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- STEP 4: READINESS SCORE & ACTIONABLE GAP LIST -->
-    <section class="step-view" id="viewStep4">
-      <div class="section-top-bar">
-        <div>
-          <span class="badge badge-primary">Tender Readiness Engine</span>
-          <h2>Tender Readiness Score & Gap Resolution List</h2>
-          <p class="text-muted">Weighted readiness scoring with mandatory hard gates to prevent non-compliant tender awards</p>
-        </div>
-        <div class="btn-group">
-          <button class="btn btn-secondary" id="step4BackBtn">Back to Mismatch Matrix</button>
-          <button class="btn btn-primary" id="step4NextBtn">View Compliance Report</button>
-        </div>
-      </div>
-
-      <!-- Hard Gate Alert Banner -->
-      <div class="hard-gate-banner" id="hardGateBanner">
-        <!-- Dynamically rendered -->
-      </div>
-
-      <div class="readiness-summary-grid">
-        <!-- Score Donut Card -->
-        <div class="card glass-card score-card">
-          <div class="score-card-body">
-            <div class="gauge-container">
-              <svg class="score-donut" viewBox="0 0 100 100">
-                <circle class="donut-ring" cx="50" cy="50" r="40" stroke-width="12"></circle>
-                <circle class="donut-segment segment-met" cx="50" cy="50" r="40" stroke-width="12" id="donutMet"></circle>
-                <circle class="donut-segment segment-review" cx="50" cy="50" r="40" stroke-width="12" id="donutReview"></circle>
-                <circle class="donut-segment segment-failed" cx="50" cy="50" r="40" stroke-width="12" id="donutFailed"></circle>
-              </svg>
-              <div class="score-center-text">
-                <span class="score-number" id="readinessScoreVal">68%</span>
-                <span class="score-sub" id="readinessRatioVal">6 of 10 Met</span>
-              </div>
-            </div>
-
-            <div class="score-legend">
-              <div class="legend-row">
-                <span class="legend-dot met"></span>
-                <span class="legend-text">Requirements Satisfied</span>
-                <span class="legend-count" id="countMet">6</span>
-              </div>
-              <div class="legend-row">
-                <span class="legend-dot review"></span>
-                <span class="legend-text">Requires Officer Review</span>
-                <span class="legend-count" id="countReview">2</span>
-              </div>
-              <div class="legend-row">
-                <span class="legend-dot not-met"></span>
-                <span class="legend-text">Failed / Non-Compliant</span>
-                <span class="legend-count" id="countFailed">2</span>
-              </div>
-            </div>
-          </div>
-          <div class="score-formula-note">
-            <strong>Hard Gate Evaluation Rule:</strong> Score = Weight of Met Items / Total Weight. Items requiring human review are <em>never</em> counted as met. Any mandatory gate failure halts award qualification.
-          </div>
-        </div>
-
-        <!-- Actionable Gap List -->
-        <div class="card glass-card gap-card">
-          <div class="card-header">
-            <div>
-              <h3>Actionable Gap List (Fix Before Bidding)</h3>
-              <p class="text-muted">Remediation steps for the bidder to achieve 100% eligibility</p>
-            </div>
-            <span class="badge badge-danger" id="gapCountBadge">2 Critical Gaps</span>
-          </div>
-          <div class="gap-list-items" id="gapListContainer">
-            <!-- Dynamically populated -->
-          </div>
-        </div>
-      </div>
-
-      <!-- Evaluation Table -->
-      <div class="card glass-card mt-4">
-        <div class="card-header">
-          <h3>Full Requirements Checklist Audit</h3>
-          <div class="filter-pills">
-            <button class="pill-btn active" data-filter="all">All Requirements</button>
-            <button class="pill-btn" data-filter="mandatory">Mandatory Gates Only</button>
-            <button class="pill-btn" data-filter="failed">Failed / Review</button>
-          </div>
-        </div>
-        <div class="table-responsive">
-          <table class="evaluation-table" id="evalTable">
-            <thead>
-              <tr>
-                <th>Requirement</th>
-                <th>Importance</th>
-                <th>Extracted Value</th>
-                <th>Applied Rule</th>
-                <th>Verdict</th>
-                <th>Reviewer Action</th>
-              </tr>
-            </thead>
-            <tbody id="evalTableBody">
-              <!-- Dynamically populated -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- STEP 5: COMPLIANCE AUDIT REPORT & HUMAN-IN-THE-LOOP OVERRIDE -->
-    <section class="step-view" id="viewStep5">
-      <div class="section-top-bar">
-        <div>
-          <span class="badge badge-accent">Audit-Ready Certification</span>
-          <h2>Evidence-Based Compliance Audit Report</h2>
-          <p class="text-muted">Deterministic screening findings with source references, human approval logs, and ESG procurement indicators</p>
-        </div>
-        <div class="btn-group">
-          <button class="btn btn-secondary" onclick="window.print()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-            Export PDF / Print
+        <div class="benchmark-buttons-group">
+          <span class="control-label">Load Demo Case:</span>
+          <button class="btn-scenario active" data-scenario="sample-traders" id="btnCase1">
+            <span class="dot-indicator warning"></span>
+            Case 1: Expired OEM Auth (Hard Gate Blocked)
           </button>
-          <button class="btn btn-outline" id="exportJsonBtn">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <button class="btn-scenario" data-scenario="compliant-vendor" id="btnCase2">
+            <span class="dot-indicator success"></span>
+            Case 2: Bharat Tech (100% Compliant)
+          </button>
+          <button class="btn-scenario" data-scenario="fraud-risk" id="btnCase3">
+            <span class="dot-indicator danger"></span>
+            Case 3: Apex Global (PAN-GSTIN Mismatch)
+          </button>
+        </div>
+      </div>
+
+      <!-- Two-Column Operational Layout -->
+      <div class="workspace-grid">
+
+        <!-- ================= LEFT COLUMN: DOCUMENTS & INGESTION ================= -->
+        <div class="grid-col-left">
+          
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-title-group">
+                <h3>Vendor Submitted Documents</h3>
+                <span class="panel-subtitle">Upload real files or inspect extracted OCR text</span>
+              </div>
+              <button class="btn btn-primary btn-sm" id="btnRunAuditScan">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                <span>Run Compliance Scan</span>
+              </button>
+            </div>
+
+            <!-- Upload Slots -->
+            <div class="doc-slots-list">
+
+              <!-- Slot 1: GST Registration -->
+              <div class="doc-slot-card" data-doc="gst" id="slotCardGst">
+                <div class="doc-slot-header">
+                  <div class="doc-type-info">
+                    <span class="doc-icon">📄</span>
+                    <div>
+                      <div class="doc-title">GST Registration (REG-06) <span class="tag-mandatory">Mandatory</span></div>
+                      <div class="doc-filename" id="slotNameGst">sample_gst_certificate.pdf</div>
+                    </div>
+                  </div>
+                  <div class="slot-actions">
+                    <input type="file" id="fileUploadGst" class="file-hidden" accept=".pdf,.txt,.doc,.docx,.png,.jpg">
+                    <button class="btn-upload" onclick="document.getElementById('fileUploadGst').click()">Upload File</button>
+                    <button class="btn-inspect" onclick="app.inspectDocProof('gst', 'gstin')">Inspect Proof</button>
+                  </div>
+                </div>
+                <div class="doc-field-summary" id="slotSummaryGst">
+                  GSTIN: <strong class="font-mono">07ABCDE1234F1Z5</strong> • Status: <span class="text-success">● Active</span>
+                </div>
+              </div>
+
+              <!-- Slot 2: PAN Card -->
+              <div class="doc-slot-card" data-doc="pan" id="slotCardPan">
+                <div class="doc-slot-header">
+                  <div class="doc-type-info">
+                    <span class="doc-icon">💳</span>
+                    <div>
+                      <div class="doc-title">PAN Card & Tax Identity <span class="tag-mandatory">Mandatory</span></div>
+                      <div class="doc-filename" id="slotNamePan">sample_pan_card.pdf</div>
+                    </div>
+                  </div>
+                  <div class="slot-actions">
+                    <input type="file" id="fileUploadPan" class="file-hidden" accept=".pdf,.txt,.doc,.docx,.png,.jpg">
+                    <button class="btn-upload" onclick="document.getElementById('fileUploadPan').click()">Upload File</button>
+                    <button class="btn-inspect" onclick="app.inspectDocProof('pan', 'panNumber')">Inspect Proof</button>
+                  </div>
+                </div>
+                <div class="doc-field-summary" id="slotSummaryPan">
+                  PAN: <strong class="font-mono">ABCDE1234F</strong> • Entity: <strong>Company (Corporate)</strong>
+                </div>
+              </div>
+
+              <!-- Slot 3: OEM Authorization Letter -->
+              <div class="doc-slot-card highlight-attention" data-doc="oem" id="slotCardOem">
+                <div class="doc-slot-header">
+                  <div class="doc-type-info">
+                    <span class="doc-icon">📜</span>
+                    <div>
+                      <div class="doc-title">OEM Authorization Form (MAF) <span class="tag-mandatory">Mandatory Gate</span></div>
+                      <div class="doc-filename text-primary" id="slotNameOem">sample_oem_letter.pdf</div>
+                    </div>
+                  </div>
+                  <div class="slot-actions">
+                    <input type="file" id="fileUploadOem" class="file-hidden" accept=".pdf,.txt,.doc,.docx,.png,.jpg">
+                    <button class="btn-upload" onclick="document.getElementById('fileUploadOem').click()">Upload File</button>
+                    <button class="btn-inspect active" onclick="app.inspectDocProof('oem', 'validUntil')">Inspect Proof</button>
+                  </div>
+                </div>
+                <div class="doc-field-summary" id="slotSummaryOem">
+                  Valid Until: <strong class="font-mono text-danger">31 Mar 2024 (Lapsed / Expired)</strong>
+                </div>
+              </div>
+
+              <!-- Slot 4: Udyam MSME Registration -->
+              <div class="doc-slot-card" data-doc="udyam" id="slotCardUdyam">
+                <div class="doc-slot-header">
+                  <div class="doc-type-info">
+                    <span class="doc-icon">🏢</span>
+                    <div>
+                      <div class="doc-title">Udyam MSME Registration <span class="tag-optional">Optional / Exemption</span></div>
+                      <div class="doc-filename" id="slotNameUdyam">sample_udyam_registration.pdf</div>
+                    </div>
+                  </div>
+                  <div class="slot-actions">
+                    <input type="file" id="fileUploadUdyam" class="file-hidden" accept=".pdf,.txt,.doc,.docx,.png,.jpg">
+                    <button class="btn-upload" onclick="document.getElementById('fileUploadUdyam').click()">Upload File</button>
+                    <button class="btn-inspect" onclick="app.inspectDocProof('udyam', 'enterpriseName')">Inspect Proof</button>
+                  </div>
+                </div>
+                <div class="doc-field-summary" id="slotSummaryUdyam">
+                  Udyam No: <strong class="font-mono">UDYAM-DL-08-0019284</strong> • Category: <strong>Small Enterprise</strong>
+                </div>
+              </div>
+
+              <!-- Slot 5: Startup India Recognition -->
+              <div class="doc-slot-card" data-doc="startup" id="slotCardStartup">
+                <div class="doc-slot-header">
+                  <div class="doc-type-info">
+                    <span class="doc-icon">⭐</span>
+                    <div>
+                      <div class="doc-title">Startup India DPIIT Recognition <span class="tag-optional">Optional</span></div>
+                      <div class="doc-filename text-muted" id="slotNameStartup">Document not provided (Optional)</div>
+                    </div>
+                  </div>
+                  <div class="slot-actions">
+                    <input type="file" id="fileUploadStartup" class="file-hidden" accept=".pdf,.txt,.doc,.docx,.png,.jpg">
+                    <button class="btn-upload" onclick="document.getElementById('fileUploadStartup').click()">Upload File</button>
+                  </div>
+                </div>
+                <div class="doc-field-summary text-muted" id="slotSummaryStartup">
+                  No startup turnover waiver claimed for this bid.
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Cross-Document Discrepancy Matrix (Slide 5 Feature) -->
+          <div class="panel-card mt-3">
+            <div class="panel-header">
+              <div class="panel-title-group">
+                <h3>Cross-Document Reconciliation Matrix</h3>
+                <span class="panel-subtitle">Normalized fuzzy comparison across GSTIN, PAN, and Udyam</span>
+              </div>
+            </div>
+
+            <div class="table-container">
+              <table class="data-table" id="matrixTable">
+                <thead>
+                  <tr>
+                    <th>Attribute</th>
+                    <th>GST Certificate</th>
+                    <th>PAN Card</th>
+                    <th>Udyam MSME</th>
+                    <th>Similarity</th>
+                    <th>Verdict</th>
+                  </tr>
+                </thead>
+                <tbody id="matrixTableBody">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="rule-hint-box">
+              <span class="hint-icon">💡</span>
+              <span class="hint-text">
+                <strong>Algorithmic Rule:</strong> Characters 3 to 12 in the GSTIN are parsed to verify exact parity against the PAN card. Doubtful company name variances are routed to <em>Officer Review</em> rather than auto-disqualifying the vendor.
+              </span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ================= RIGHT COLUMN: LIVE READINESS & EVIDENCE VIEWER ================= -->
+        <div class="grid-col-right">
+
+          <!-- Executive Readiness Scorecard -->
+          <div class="panel-card">
+            <div class="verdict-banner-container" id="hardGateBanner">
+              <!-- Populated via JS -->
+            </div>
+
+            <div class="scorecard-body">
+              <div class="donut-wrapper">
+                <svg class="donut-svg" viewBox="0 0 100 100">
+                  <circle class="donut-bg" cx="50" cy="50" r="40" stroke-width="12"></circle>
+                  <circle class="donut-bar bar-met" cx="50" cy="50" r="40" stroke-width="12" id="donutMet"></circle>
+                  <circle class="donut-bar bar-review" cx="50" cy="50" r="40" stroke-width="12" id="donutReview"></circle>
+                  <circle class="donut-bar bar-failed" cx="50" cy="50" r="40" stroke-width="12" id="donutFailed"></circle>
+                </svg>
+                <div class="donut-text">
+                  <span class="donut-number" id="readinessScoreVal">65%</span>
+                  <span class="donut-label" id="readinessRatioVal">6 of 8 Met</span>
+                </div>
+              </div>
+
+              <div class="score-breakdown">
+                <div class="stat-pill met">
+                  <span class="stat-bullet"></span>
+                  <span class="stat-name">Requirements Satisfied:</span>
+                  <strong class="stat-count" id="countMet">6</strong>
+                </div>
+                <div class="stat-pill review">
+                  <span class="stat-bullet"></span>
+                  <span class="stat-name">Requires Officer Review:</span>
+                  <strong class="stat-count" id="countReview">1</strong>
+                </div>
+                <div class="stat-pill failed">
+                  <span class="stat-bullet"></span>
+                  <span class="stat-name">Failed / Expired:</span>
+                  <strong class="stat-count" id="countFailed">1</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actionable Remediation Gap List -->
+            <div class="gap-list-box">
+              <div class="gap-list-header">
+                <span class="gap-list-title">Actionable Gaps to Resolve:</span>
+                <span class="badge badge-danger" id="gapCountBadge">1 Critical Defect</span>
+              </div>
+              <div class="gap-items" id="gapListContainer">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+
+          <!-- High Fidelity Visual Document Proof Viewer -->
+          <div class="panel-card mt-3">
+            <div class="panel-header">
+              <div class="panel-title-group">
+                <h3>Document Evidence & OCR Inspector</h3>
+                <span class="panel-subtitle" id="inspectorDocTitle">oem_letter.pdf • Page 1 (Validity Anchor)</span>
+              </div>
+              <div style="display: flex; gap: 6px; align-items: center;">
+                <button class="btn btn-xs btn-primary" id="btnToggleVisualProof">Visual Proof</button>
+                <button class="btn btn-xs btn-outline" id="btnToggleOcrText">Extracted OCR Text</button>
+                <span class="badge badge-accent" id="inspectorConfBadge">Confidence: 94.2%</span>
+              </div>
+            </div>
+
+            <div class="document-canvas-wrapper" id="docViewerWrapper">
+              <div class="rendered-document" id="mockDocumentContainer">
+                <!-- High-fidelity document canvas -->
+              </div>
+              <div id="mockOcrTextContainer" style="display: none; background: #09090B; border: 1px solid #27272A; border-radius: 6px; padding: 14px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; line-height: 1.6; color: #E4E4E7; white-space: pre-wrap; max-height: 280px; overflow-y: auto;">
+                <!-- Raw OCR text -->
+              </div>
+            </div>
+
+            <div class="inspector-controls">
+              <span class="text-xs text-muted">Click any requirement below to review official text coordinates or override verdict:</span>
+              <button class="btn btn-warning btn-sm" id="btnTriggerOverride">Reviewer Override</button>
+            </div>
+          </div>
+
+          <!-- Requirements Checklist Table -->
+          <div class="panel-card mt-3">
+            <div class="panel-header">
+              <div class="panel-title-group">
+                <h3>Checklist Rules Evaluation</h3>
+                <span class="panel-subtitle">Rule applied & evidence verification anchor</span>
+              </div>
+            </div>
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Requirement</th>
+                    <th>Type</th>
+                    <th>Extracted Evidence</th>
+                    <th>Verdict</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="checklistTableBody">
+                  <!-- Populated via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- =====================================================================
+         TAB 2: OFFICIAL COMPLIANCE CERTIFICATE (Export / Print Ready)
+         ===================================================================== -->
+    <div class="tab-content-panel" id="tabCertificate">
+      <div class="cert-toolbar">
+        <div>
+          <h2>Procurement Compliance Audit Certificate</h2>
+          <p class="text-muted">Certified first-pass technical evaluation statement for tender committee records</p>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="window.print()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Print / Export Official PDF
+          </button>
+          <button class="btn btn-secondary" id="btnExportJson">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Export JSON Audit Trail
           </button>
         </div>
       </div>
 
-      <!-- Evidence Findings Cards -->
-      <div class="findings-container" id="findingsContainer">
-        <!-- Rendered via JS -->
-      </div>
-
-      <!-- ESG & Sustainable Public Procurement Metrics -->
-      <div class="sdg-dashboard-row mt-4">
-        <div class="card glass-card sdg-card">
-          <div class="sdg-header">
-            <span class="sdg-box-small sdg-16">16</span>
-            <div>
-              <h4>SDG 16: Institutional Integrity</h4>
-              <p class="text-muted">Transparent, traceable government screening</p>
-            </div>
+      <div class="certificate-sheet" id="printCertificateArea">
+        <div class="cert-header">
+          <div class="cert-seal">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#0284C7" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
           </div>
-          <div class="sdg-stats">
-            <div class="sdg-stat-item">
-              <span class="stat-number">100%</span>
-              <span class="stat-title">Traceable Decisions</span>
-              <span class="stat-sub">Every finding links directly to document bounding coordinates</span>
-            </div>
-            <div class="sdg-stat-item">
-              <span class="stat-number">0</span>
-              <span class="stat-title">Black-Box Rejections</span>
-              <span class="stat-sub">Deterministic rules evaluate; AI strictly explains reasons</span>
-            </div>
+          <div class="cert-title-block">
+            <div class="cert-super">GOVERNMENT PROCUREMENT & STATUTORY SCREENING AUDIT</div>
+            <h1 class="cert-main-title">VENDOR COMPLIANCE AUDIT CERTIFICATE</h1>
+            <div class="cert-ref" id="certRefNo">REF: TL-2026-GEM-891240-001</div>
           </div>
         </div>
 
-        <div class="card glass-card sdg-card">
-          <div class="sdg-header">
-            <span class="sdg-box-small sdg-9">9</span>
-            <div>
-              <h4>SDG 9: Industrial Innovation</h4>
-              <p class="text-muted">AI applied to public procurement efficiency</p>
-            </div>
+        <div class="cert-metadata-grid">
+          <div class="cert-meta-item">
+            <span class="meta-label">Vendor Name:</span>
+            <strong id="certVendorName">Sample Traders Pvt Ltd</strong>
           </div>
-          <div class="sdg-stats">
-            <div class="sdg-stat-item">
-              <span class="stat-number">82%</span>
-              <span class="stat-title">Turnaround Reduction</span>
-              <span class="stat-sub">First-pass screen drops from ~45 minutes to under 5 seconds</span>
-            </div>
-            <div class="sdg-stat-item">
-              <span class="stat-number">100%</span>
-              <span class="stat-title">Consistency Rate</span>
-              <span class="stat-sub">Eliminates human oversight in validity date lapses</span>
-            </div>
+          <div class="cert-meta-item">
+            <span class="meta-label">Tender Specification:</span>
+            <strong id="certTenderTitle">GeM Portal: IT Hardware Supply (RFP-2026-889)</strong>
+          </div>
+          <div class="cert-meta-item">
+            <span class="meta-label">Screening Timestamp:</span>
+            <strong id="certTimestamp">2026-10-21 17:50:00 UTC</strong>
+          </div>
+          <div class="cert-meta-item">
+            <span class="meta-label">Overall Screening Verdict:</span>
+            <strong id="certVerdictStatus" class="text-danger">DISQUALIFIED (Mandatory Gate Failed)</strong>
           </div>
         </div>
 
-        <div class="card glass-card sdg-card">
-          <div class="sdg-header">
-            <span class="sdg-box-small sdg-8">8</span>
-            <div>
-              <h4>SDG 8: Decent Work & MSME Growth</h4>
-              <p class="text-muted">Equitable tender participation for MSMEs & Startups</p>
-            </div>
+        <div class="cert-section-title">1. Technical Requirements Breakdown</div>
+        <table class="cert-table" id="certBreakdownTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Requirement</th>
+              <th>Classification</th>
+              <th>Extracted Value</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="certTableBody">
+            <!-- Populated via JS -->
+          </tbody>
+        </table>
+
+        <div class="cert-section-title mt-4">2. Permanent Cryptographic Audit Hash</div>
+        <div class="cert-hash-box">
+          <div class="font-mono text-xs">SHA-256: e8b9410acb79d8412e6bf54b9d5c8e31a19024f2b740529841da92487e41209b</div>
+          <div class="text-xs text-muted mt-1">Generated deterministically by TenderLens AI Compliance Core v1.0. All extracted fields are linked to source pixel coordinates.</div>
+        </div>
+
+        <div class="cert-signature-row">
+          <div class="sig-col">
+            <div class="sig-line"></div>
+            <div class="sig-name">Automated AI OCR Engine</div>
+            <div class="sig-title">Deterministic Screening Core</div>
           </div>
-          <div class="sdg-stats">
-            <div class="sdg-stat-item">
-              <span class="stat-number">Pre-bid</span>
-              <span class="stat-title">Defect Remediation</span>
-              <span class="stat-sub">MSMEs fix document gaps before formal tender disqualification</span>
-            </div>
-            <div class="sdg-stat-item">
-              <span class="stat-number">Equal</span>
-              <span class="stat-title">Opportunity</span>
-              <span class="stat-sub">Unbiased screening benchmarks applied across all bidders</span>
-            </div>
+          <div class="sig-col">
+            <div class="sig-line"></div>
+            <div class="sig-name">Evaluation Officer</div>
+            <div class="sig-title">Tender Committee Admin</div>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Human-in-the-Loop Reviewer Audit & Accountability Log -->
-      <div class="card glass-card mt-4">
-        <div class="card-header">
-          <div>
-            <h3>Procurement Officer Audit & Accountability Log</h3>
-            <p class="text-muted">All manual approvals, justifications, and status overrides are permanently stored on the backend</p>
+    <!-- =====================================================================
+         TAB 3: AUDIT TRAIL LOG (Human-in-the-Loop Transparency)
+         ===================================================================== -->
+    <div class="tab-content-panel" id="tabAuditTrail">
+      <div class="panel-card">
+        <div class="panel-header">
+          <div class="panel-title-group">
+            <h2>Persistent Procurement Officer Audit Trail</h2>
+            <p class="text-muted">Permanent chronological log of all automated scans, flag alerts, and manual officer overrides stored in backend</p>
           </div>
-          <span class="badge badge-success">Human in the Loop Active</span>
+          <span class="badge badge-success">Audit Persistence Active</span>
         </div>
-        <div class="table-responsive">
-          <table class="audit-log-table">
+
+        <div class="table-container mt-3">
+          <table class="data-table">
             <thead>
               <tr>
+                <th>Log ID</th>
                 <th>Timestamp</th>
-                <th>Reviewer ID</th>
-                <th>Target Item</th>
-                <th>Original AI State</th>
-                <th>Override Action</th>
-                <th>Justification & Remarks</th>
+                <th>Reviewer / Actor</th>
+                <th>Target Requirement</th>
+                <th>Original State</th>
+                <th>Action Taken</th>
+                <th>Justification & Rationale</th>
               </tr>
             </thead>
-            <tbody id="auditLogTableBody">
+            <tbody id="fullAuditLogsTableBody">
               <!-- Dynamically populated via API -->
             </tbody>
           </table>
         </div>
       </div>
-    </section>
+    </div>
+
+    <!-- =====================================================================
+         TAB 4: ESG & PUBLIC PROCUREMENT IMPACT (SDG 16, 9, 8)
+         ===================================================================== -->
+    <div class="tab-content-panel" id="tabEsgImpact">
+      <div class="esg-hero-banner">
+        <h2>ESG & Public Value Procurement Impact</h2>
+        <p class="text-muted">Quantifying institutional transparency, procurement turnaround reduction, and equitable MSME onboarding</p>
+      </div>
+
+      <div class="esg-cards-grid">
+        <!-- SDG 16 -->
+        <div class="esg-card sdg-16-card">
+          <div class="esg-card-header">
+            <span class="esg-badge sdg-16">SDG 16</span>
+            <div>
+              <h3>Institutional Integrity & Justice</h3>
+              <span class="text-muted text-xs">Transparent, Traceable Public Procurement</span>
+            </div>
+          </div>
+          <div class="esg-card-body">
+            <div class="esg-stat">
+              <span class="esg-num">100%</span>
+              <span class="esg-sub">Traceable Claims</span>
+              <p class="text-xs text-muted">Every decision maps back to source page bounding boxes, eliminating black-box bias.</p>
+            </div>
+            <div class="esg-stat">
+              <span class="esg-num">0</span>
+              <span class="esg-sub">Unverified Rejections</span>
+              <p class="text-xs text-muted">Mandatory justification logs required for any disqualification override.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- SDG 9 -->
+        <div class="esg-card sdg-9-card">
+          <div class="esg-card-header">
+            <span class="esg-badge sdg-9">SDG 9</span>
+            <div>
+              <h3>Industrial Innovation & AI</h3>
+              <span class="text-muted text-xs">Public Sector Operational Productivity</span>
+            </div>
+          </div>
+          <div class="esg-card-body">
+            <div class="esg-stat">
+              <span class="esg-num">82%</span>
+              <span class="esg-sub">Time Saved</span>
+              <p class="text-xs text-muted">First-pass vendor document checks drop from 45 minutes to under 5 seconds.</p>
+            </div>
+            <div class="esg-stat">
+              <span class="esg-num">98.2%</span>
+              <span class="esg-sub">Oversight Prevention</span>
+              <p class="text-xs text-muted">Eliminates human error in catching lapsed OEM and GST registration dates.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- SDG 8 -->
+        <div class="esg-card sdg-8-card">
+          <div class="esg-card-header">
+            <span class="esg-badge sdg-8">SDG 8</span>
+            <div>
+              <h3>Decent Work & Economic Growth</h3>
+              <span class="text-muted text-xs">Equitable MSME & Startup Onboarding</span>
+            </div>
+          </div>
+          <div class="esg-card-body">
+            <div class="esg-stat">
+              <span class="esg-num">Pre-Bid</span>
+              <span class="esg-sub">Remediation Gap Discovery</span>
+              <p class="text-xs text-muted">MSMEs identify missing documentation before formal tender disqualification.</p>
+            </div>
+            <div class="esg-stat">
+              <span class="esg-num">Fair</span>
+              <span class="esg-sub">Market Access</span>
+              <p class="text-xs text-muted">Standardized objective scoring levels the playing field for small enterprises.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
   </main>
 
   <!-- Reviewer Override Modal -->
-  <div class="modal-backdrop" id="overrideModal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3 id="modalOverrideTitle">Reviewer Override & Authorization</h3>
-        <button class="modal-close-btn" id="modalCloseBtn">&times;</button>
+  <div class="modal-overlay" id="overrideModal">
+    <div class="modal-box">
+      <div class="modal-box-header">
+        <h3>Evaluation Officer Override</h3>
+        <button class="btn-close" id="btnModalClose">&times;</button>
       </div>
-      <div class="modal-body">
+      <div class="modal-box-body">
         <p class="text-sm text-muted mb-3">
-          As a designated evaluation officer, you can override the automated screening verdict. Your action will be permanently recorded in the audit trail.
+          As a designated procurement officer, you can override the automated screening verdict. Your action will be permanently logged in the audit trail.
         </p>
 
         <div class="form-group mb-3">
-          <label class="form-label">Checklist Requirement:</label>
-          <div class="form-control-static" id="modalReqText">Valid OEM authorization for the tendered product</div>
+          <label class="form-label">Requirement:</label>
+          <div class="form-static" id="modalReqTitle">Valid OEM authorization for the tendered product</div>
         </div>
 
         <div class="form-group mb-3">
           <label class="form-label">New Status Verdict:</label>
           <div class="radio-pill-group">
-            <label class="radio-pill">
-              <input type="radio" name="overrideStatus" value="COMPLIANT">
-              <span>Approve (Mark as Compliant)</span>
+            <label class="radio-item">
+              <input type="radio" name="overrideVerdict" value="COMPLIANT" checked>
+              <span>Approve (Mark Compliant)</span>
             </label>
-            <label class="radio-pill">
-              <input type="radio" name="overrideStatus" value="REQUIRES_REVIEW">
-              <span>Escalate for Legal Advisory</span>
+            <label class="radio-item">
+              <input type="radio" name="overrideVerdict" value="REQUIRES_REVIEW">
+              <span>Escalate for Legal Review</span>
             </label>
-            <label class="radio-pill">
-              <input type="radio" name="overrideStatus" value="NON_COMPLIANT">
+            <label class="radio-item">
+              <input type="radio" name="overrideVerdict" value="NON_COMPLIANT">
               <span>Reject (Confirm Non-Compliant)</span>
             </label>
           </div>
         </div>
 
         <div class="form-group mb-3">
-          <label class="form-label" for="overrideNotes">Reviewer Justification Note (Mandatory for Audit Compliance):</label>
-          <textarea id="overrideNotes" class="form-textarea" rows="3" placeholder="Provide administrative rationale, circular reference, or verified proof..."></textarea>
+          <label class="form-label" for="txtOverrideReason">Officer Justification Note (Mandatory):</label>
+          <textarea id="txtOverrideReason" class="form-textarea" rows="3" placeholder="Provide formal procurement rationale, verified endorsement letter, or circular reference..."></textarea>
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="reviewerOfficerName">Reviewing Officer Name / Designation:</label>
-          <input type="text" id="reviewerOfficerName" class="form-input" value="Evaluation Officer (Admin)">
+          <label class="form-label" for="txtOfficerName">Officer Name / Designation:</label>
+          <input type="text" id="txtOfficerName" class="form-input" value="Evaluation Officer (Admin)">
         </div>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" id="modalCancelBtn">Cancel</button>
-        <button class="btn btn-primary" id="modalSaveOverrideBtn">Confirm & Log Override</button>
+      <div class="modal-box-footer">
+        <button class="btn btn-secondary" id="btnModalCancel">Cancel</button>
+        <button class="btn btn-primary" id="btnModalConfirm">Confirm & Save Override</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTHENTICATION MODAL (LOGIN & SIGN UP) -->
+  <div class="modal-overlay" id="authModal">
+    <div class="auth-box">
+      <div class="modal-box-header">
+        <div>
+          <div class="auth-header-title" id="authModalTitle">Sign In to TenderLens</div>
+          <div class="text-xs text-muted">AI-Powered Public Procurement Screening</div>
+        </div>
+        <button class="btn-close" id="btnCloseAuthModal">&times;</button>
+      </div>
+
+      <div class="auth-tabs-row">
+        <button class="auth-tab-item active" id="btnAuthTabLogin">Log In</button>
+        <button class="auth-tab-item" id="btnAuthTabSignup">Sign Up</button>
+      </div>
+
+      <form id="authForm">
+        <div class="form-group mb-3">
+          <label class="form-label" for="authEmailInput">Email Address:</label>
+          <input type="email" id="authEmailInput" class="form-input" placeholder="officer@procurement.gov.in" required>
+        </div>
+
+        <div class="form-group mb-3">
+          <label class="form-label" for="authPasswordInput">Password:</label>
+          <input type="password" id="authPasswordInput" class="form-input" placeholder="••••••••" required>
+        </div>
+
+        <div class="form-group mb-3">
+          <label class="form-label" for="authRoleSelect">Account Role:</label>
+          <select id="authRoleSelect" class="form-select">
+            <option value="Evaluation Officer (Admin)">Procurement Evaluation Officer (Admin)</option>
+            <option value="Tender Committee Lead">Tender Committee Lead</option>
+            <option value="Vendor / Bidder">Vendor / MSME Bidder</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="btnAuthSubmit" style="width: 100%; justify-content: center; margin-top: 0.5rem;">
+          Log In to Workspace
+        </button>
+      </form>
+
+      <div style="margin-top: 1.25rem; border-top: 1px solid #27272A; padding-top: 1rem;">
+        <span class="text-xs text-muted" style="display: block; text-align: center; margin-bottom: 6px;">1-Click Quick Demo Login:</span>
+        <div class="quick-role-buttons">
+          <button type="button" class="btn-quick-role" id="btnQuickOfficer">
+            ⚡ As Evaluation Officer (Admin)
+          </button>
+          <button type="button" class="btn-quick-role" id="btnQuickLead">
+            ⚡ As Tender Committee Lead
+          </button>
+          <button type="button" class="btn-quick-role" id="btnQuickVendor">
+            ⚡ As Vendor Bidder (MSME)
+          </button>
+        </div>
       </div>
     </div>
   </div>

@@ -1,0 +1,8 @@
+{"timestamp":"00:00:01.493","source":"Server","level":"LOG","message":""}
+{"timestamp":"00:00:01.493","source":"Server","level":"LOG","message":"✓ Generated AGENTS.md for AI agents. Set `agentRules: false` in next.config to disable."}
+{"timestamp":"00:05:42.711","source":"Server","level":"LOG","message":"✓ Compiled in 33ms"}
+{"timestamp":"00:07:17.313","source":"Server","level":"WARN","message":"⚠ Fast Refresh had to perform a full reload when ./app/page.jsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload"}
+{"timestamp":"00:07:17.323","source":"Server","level":"LOG","message":"✓ Compiled in 81ms"}
+{"timestamp":"00:24:29.687","source":"Server","level":"LOG","message":"✓ Compiled in 67ms"}
+{"timestamp":"00:39:43.687","source":"Server","level":"LOG","message":"✓ Compiled in 37ms"}
+{"timestamp":"00:44:29.110","source":"Server","level":"LOG","message":"✓ Compiled in 47ms"}
