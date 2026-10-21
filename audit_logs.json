@@ -1,0 +1,29 @@
+[
+  {
+    "id": "LOG-1792584665454",
+    "timestamp": "2026-10-21 12:11:05",
+    "reviewer": "Procurement Ingestion Pipeline",
+    "item": "Batch Document Upload",
+    "original": "STAGED",
+    "action": "EXTRACTED",
+    "notes": "Successfully ingested 2 files for real OCR parsing."
+  },
+  {
+    "id": "LOG-001",
+    "timestamp": "2026-10-21 11:10:11",
+    "reviewer": "System Pipeline (Auto-OCR)",
+    "item": "OEM Authorization Letter",
+    "original": "PENDING",
+    "action": "NON_COMPLIANT Flagged",
+    "notes": "Lapsed validity date detected: 31 Mar 2024 < Tender Deadline 31 Dec 2026"
+  },
+  {
+    "id": "LOG-002",
+    "timestamp": "2026-10-21 11:11:51",
+    "reviewer": "System Pipeline (Cross-Doc)",
+    "item": "Legal Name Consistency",
+    "original": "PENDING",
+    "action": "REQUIRES_REVIEW Flagged",
+    "notes": "Discrepancy across GST (\"Sample Traders Pvt Ltd\") and Udyam (\"Sample Trader Enterprises\")"
+  }
+]
